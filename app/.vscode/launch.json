@@ -7,19 +7,22 @@
     {
       "name": "debug",
       "request": "launch",
-      "type": "dart"
+      "type": "dart",
+      "preLaunchTask": "Export env"
     },
     {
       "name": "profile",
       "request": "launch",
       "type": "dart",
-      "flutterMode": "profile"
+      "flutterMode": "profile",
+      "preLaunchTask": "Export env"
     },
     {
       "name": "release",
       "request": "launch",
       "type": "dart",
-      "flutterMode": "release"
+      "flutterMode": "release",
+      "preLaunchTask": "Export env"
     }
   ]
 }

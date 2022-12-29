@@ -1,0 +1,17 @@
+environment_config:
+  path: constants/environment_config.dart
+  class: Env
+
+  fields:
+    twitterClientId: 
+      type: String
+      env_var: TWITTER_CLIENT_ID
+    twitterClientSecret:
+      type: String
+      env_var: TWITTER_CLIENT_SECRET
+    twitterAccessToken:
+      type: String
+      env_var: TWITTER_ACCESS_TOKEN
+    twitterAccessSecret:
+      type: String
+      env_var: TWITTER_ACCESS_SECRET

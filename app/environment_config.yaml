@@ -9,9 +9,3 @@ environment_config:
     twitterClientSecret:
       type: String
       env_var: TWITTER_CLIENT_SECRET
-    twitterAccessToken:
-      type: String
-      env_var: TWITTER_ACCESS_TOKEN
-    twitterAccessSecret:
-      type: String
-      env_var: TWITTER_ACCESS_SECRET

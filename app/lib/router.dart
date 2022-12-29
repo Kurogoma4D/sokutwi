@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sokutwi/widgets/pages/home.dart';
 import 'package:sokutwi/widgets/pages/initialize.dart';
 import 'package:sokutwi/widgets/pages/sign_in.dart';
 
@@ -16,6 +17,12 @@ class InitializeRoute extends GoRouteData {
 class SignInRoute extends GoRouteData {
   @override
   Widget build(context, state) => const SignIn();
+}
+
+@TypedGoRoute<HomeRoute>(path: '/home')
+class HomeRoute extends GoRouteData {
+  @override
+  Widget build(context, state) => const Home();
 }
 
 final routerProvider = Provider(

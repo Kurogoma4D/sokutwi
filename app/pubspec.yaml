@@ -22,8 +22,11 @@ dependencies:
   go_router: ^6.0.0
   # UI
   flutter_native_splash: ^2.2.16
+  gap: ^2.0.1
   # Others
   twitter_api_v2: ^4.7.1
+  twitter_oauth2_pkce: ^1.0.1
+  freezed_annotation: ^2.2.0
 
 dev_dependencies:
   flutter_test:
@@ -33,6 +36,7 @@ dev_dependencies:
   go_router_builder: ^1.0.15
   build_runner: any
   build_verify: any
+  freezed: ^2.2.0
 
 flutter:
   uses-material-design: true

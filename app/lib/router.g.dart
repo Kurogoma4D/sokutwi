@@ -9,6 +9,7 @@ part of 'router.dart';
 List<GoRoute> get $appRoutes => [
       $initializeRoute,
       $signInRoute,
+      $homeRoute,
     ];
 
 GoRoute get $initializeRoute => GoRouteData.$route(
@@ -38,6 +39,23 @@ extension $SignInRouteExtension on SignInRoute {
 
   String get location => GoRouteData.$location(
         '/sign_in',
+      );
+
+  void go(BuildContext context) => context.go(location, extra: this);
+
+  void push(BuildContext context) => context.push(location, extra: this);
+}
+
+GoRoute get $homeRoute => GoRouteData.$route(
+      path: '/home',
+      factory: $HomeRouteExtension._fromState,
+    );
+
+extension $HomeRouteExtension on HomeRoute {
+  static HomeRoute _fromState(GoRouterState state) => HomeRoute();
+
+  String get location => GoRouteData.$location(
+        '/home',
       );
 
   void go(BuildContext context) => context.go(location, extra: this);

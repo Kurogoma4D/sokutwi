@@ -37,7 +37,7 @@ final twitterSignInUsecase = Provider((ref) {
 
       if (response.accessToken.isEmpty) {
         controller.state = AsyncError(UnauthorizedError(), StackTrace.current);
-        return;
+        return true;
       }
 
       controller.state = AsyncData(TwitterToken(
@@ -47,6 +47,8 @@ final twitterSignInUsecase = Provider((ref) {
     } catch (error) {
       controller.state = AsyncError(error, StackTrace.current);
     }
+
+    return false;
   };
 });
 

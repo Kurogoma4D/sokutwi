@@ -8,9 +8,9 @@ import 'package:sokutwi/widgets/build_context_ex.dart';
 
 final _hasInteractionStarted = StateProvider((_) => false);
 
-void _signIn(WidgetRef ref) {
+Future<bool> _signIn(WidgetRef ref) async {
   ref.read(_hasInteractionStarted.notifier).state = true;
-  ref.read(twitterSignInUsecase)();
+  return await ref.read(twitterSignInUsecase)();
 }
 
 class SignIn extends ConsumerStatefulWidget {
@@ -33,10 +33,6 @@ class _SignInState extends ConsumerState<SignIn> {
     final isLoading =
         ref.watch(_hasInteractionStarted) && signInState.isLoading;
 
-    if (signInState.hasValue) {
-      Future.microtask(() => HomeRoute().go(context));
-    }
-
     return Scaffold(
       appBar: AppBar(title: Text(context.string.signIn)),
       backgroundColor: Colors.white,
@@ -51,7 +47,12 @@ class _SignInState extends ConsumerState<SignIn> {
               ),
             const Gap(8),
             ElevatedButton(
-              onPressed: isLoading ? null : () => _signIn(ref),
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      final result = await _signIn(ref);
+                      if (result && mounted) HomeRoute().go(context);
+                    },
               child: Text(context.string.signIn),
             ),
           ],

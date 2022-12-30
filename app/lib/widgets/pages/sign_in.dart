@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:sokutwi/router.dart';
@@ -12,11 +13,22 @@ void _signIn(WidgetRef ref) {
   ref.read(twitterSignInUsecase)();
 }
 
-class SignIn extends ConsumerWidget {
+class SignIn extends ConsumerStatefulWidget {
   const SignIn({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SignIn> createState() => _SignInState();
+}
+
+class _SignInState extends ConsumerState<SignIn> {
+  @override
+  void initState() {
+    FlutterNativeSplash.remove();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final signInState = ref.watch(authTokenStore);
     final isLoading =
         ref.watch(_hasInteractionStarted) && signInState.isLoading;

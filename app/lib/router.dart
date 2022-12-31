@@ -1,18 +1,11 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sokutwi/usecases/twitter_sign_in.dart';
 import 'package:sokutwi/widgets/pages/home.dart';
-import 'package:sokutwi/widgets/pages/initial.dart';
 import 'package:sokutwi/widgets/pages/sign_in.dart';
 
 part 'router.g.dart';
-
-@TypedGoRoute<InitialRoute>(path: '/')
-class InitialRoute extends GoRouteData {
-  @override
-  Widget build(context, state) => const Initial();
-}
 
 @TypedGoRoute<SignInRoute>(path: '/sign_in')
 class SignInRoute extends GoRouteData {
@@ -20,7 +13,7 @@ class SignInRoute extends GoRouteData {
   Widget build(context, state) => const SignIn();
 }
 
-@TypedGoRoute<HomeRoute>(path: '/home')
+@TypedGoRoute<HomeRoute>(path: '/')
 class HomeRoute extends GoRouteData {
   @override
   Widget build(context, state) => const Home();
@@ -42,17 +35,11 @@ final routerProvider = Provider(
         return state.subloc == signInRoute ? null : signInRoute;
       }
 
-      if (state.location == '/') {
+      if (state.subloc == signInRoute) {
         debugPrint('redirect to home');
         debugPrint('----------redirect end-----------');
         return homeRoute;
       }
-
-      // if (state.subloc == signInRoute) {
-      //   debugPrint('redirect to home');
-      //   debugPrint('----------redirect end-----------');
-      //   return homeRoute;
-      // }
 
       debugPrint('location: ${state.location}');
       debugPrint('----------redirect end-----------');

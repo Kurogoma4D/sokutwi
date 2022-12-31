@@ -25,9 +25,15 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(context.string.home)),
-      body: const Center(child: _TweetButton()),
+    return ProviderScope(
+      overrides: [
+        // TODO(Kurogoma4D): delete this
+        postTweet.overrideWithValue((text) async => TweetResult.done),
+      ],
+      child: Scaffold(
+        appBar: AppBar(title: Text(context.string.home)),
+        body: const Center(child: _TweetButton()),
+      ),
     );
   }
 }

@@ -27,6 +27,7 @@ class App extends ConsumerWidget {
       supportedLocales: const [
         Locale('ja', 'JP'),
       ],
+      theme: ThemeData.dark(useMaterial3: true),
       routeInformationParser: router.routeInformationParser,
       routeInformationProvider: router.routeInformationProvider,
       routerDelegate: router.routerDelegate,

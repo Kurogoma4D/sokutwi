@@ -52,7 +52,7 @@ class _HomeState extends ConsumerState<Home> {
   Widget build(BuildContext context) {
     final isShowing = ref.watch(_isShowingSticky);
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
+      value: SystemUiOverlayStyle.light,
       child: Scaffold(
         body: LayoutBuilder(
           builder: (context, constraints) => Stack(
@@ -186,9 +186,8 @@ class _StickyState extends State<_Sticky> with SingleTickerProviderStateMixin {
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
     setState(() {
-      if (!details.delta.dy.isNegative) return;
       _animationController.dragDistance =
-          (_animationController.dragDistance + details.delta.dy.abs())
+          (_animationController.dragDistance - details.delta.dy)
               .clamp(0, double.infinity);
     });
   }

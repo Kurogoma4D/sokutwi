@@ -11,6 +11,13 @@
       "preLaunchTask": "Export env"
     },
     {
+      "name": "mock",
+      "request": "launch",
+      "type": "dart",
+      "args": ["--dart-define", "mock=true"],
+      "preLaunchTask": "Export env"
+    },
+    {
       "name": "profile",
       "request": "launch",
       "type": "dart",

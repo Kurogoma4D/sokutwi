@@ -34,14 +34,28 @@ final routerProvider = Provider(
           ref.read(authTokenStore).asData?.value.token.isNotEmpty ?? false;
       final signInRoute = SignInRoute().location;
       final homeRoute = HomeRoute().location;
+      debugPrint('----------redirect start-----------');
+      debugPrint('isSignedIn: $isSignedIn');
       if (!isSignedIn) {
+        debugPrint('subloc: ${state.subloc}');
+        debugPrint('----------redirect end-----------');
         return state.subloc == signInRoute ? null : signInRoute;
       }
 
-      if (state.subloc == signInRoute) {
+      if (state.location == '/') {
+        debugPrint('redirect to home');
+        debugPrint('----------redirect end-----------');
         return homeRoute;
       }
 
+      // if (state.subloc == signInRoute) {
+      //   debugPrint('redirect to home');
+      //   debugPrint('----------redirect end-----------');
+      //   return homeRoute;
+      // }
+
+      debugPrint('location: ${state.location}');
+      debugPrint('----------redirect end-----------');
       return null;
     },
   ),

@@ -2,11 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:sokutwi/constants/constants.dart';
 import 'package:sokutwi/constants/environment_config.dart';
+import 'package:sokutwi/constants/exceptions.dart';
 import 'package:twitter_oauth2_pkce/twitter_oauth2_pkce.dart' as auth;
 
 part 'twitter_sign_in.freezed.dart';
-
-class UnauthorizedError implements Exception {}
 
 @freezed
 class TwitterToken with _$TwitterToken {
@@ -32,18 +31,22 @@ final twitterSignInUsecase = Provider((ref) {
 
     try {
       final response = await authClient.executeAuthCodeFlowWithPKCE(
-        scopes: [auth.Scope.blockWrite],
+        scopes: auth.Scope.values,
       );
 
       if (response.accessToken.isEmpty) {
-        controller.state = AsyncError(UnauthorizedError(), StackTrace.current);
-        return true;
+        controller.state = AsyncError(
+          const UnauthorizedError(),
+          StackTrace.current,
+        );
+        return false;
       }
 
       controller.state = AsyncData(TwitterToken(
         token: response.accessToken,
         refreshToken: response.refreshToken ?? '',
       ));
+      return true;
     } catch (error) {
       controller.state = AsyncError(error, StackTrace.current);
     }

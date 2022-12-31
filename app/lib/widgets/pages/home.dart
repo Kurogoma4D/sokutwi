@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sokutwi/router.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
+import 'package:sokutwi/usecases/tweet_text.dart';
 import 'package:sokutwi/widgets/build_context_ex.dart';
 import 'package:sokutwi/widgets/components/tweet_card.dart';
 
@@ -119,7 +120,7 @@ class VerticalInteractAnimationController extends AnimationController
   }
 }
 
-class _Sticky extends StatefulWidget {
+class _Sticky extends ConsumerStatefulWidget {
   const _Sticky({
     required this.displayHeight,
     required this.onDone,
@@ -132,10 +133,11 @@ class _Sticky extends StatefulWidget {
   final VoidCallback onDone;
 
   @override
-  State<_Sticky> createState() => _StickyState();
+  ConsumerState<_Sticky> createState() => _StickyState();
 }
 
-class _StickyState extends State<_Sticky> with SingleTickerProviderStateMixin {
+class _StickyState extends ConsumerState<_Sticky>
+    with SingleTickerProviderStateMixin {
   late final _animationController = VerticalInteractAnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 250),
@@ -150,6 +152,7 @@ class _StickyState extends State<_Sticky> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final text = ref.watch(inputTweetText);
     return Positioned(
       bottom: _currentPosition,
       left: 0,
@@ -158,7 +161,7 @@ class _StickyState extends State<_Sticky> with SingleTickerProviderStateMixin {
         behavior: HitTestBehavior.opaque,
         onVerticalDragStart: (_) => textFocus.unfocus(),
         onVerticalDragUpdate: _onVerticalDragUpdate,
-        onVerticalDragEnd: _onVerticalDragEnd,
+        onVerticalDragEnd: (details) => _onVerticalDragEnd(details, text),
         onTap: () => textFocus.requestFocus(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -186,7 +189,12 @@ class _StickyState extends State<_Sticky> with SingleTickerProviderStateMixin {
     });
   }
 
-  void _onVerticalDragEnd(DragEndDetails details) async {
+  void _onVerticalDragEnd(DragEndDetails details, String text) async {
+    if (text.isEmpty) {
+      await _stay();
+      return;
+    }
+
     final percentage =
         (widget.displayHeight - _currentPosition) / widget.initialPosition;
     final velocity = details.velocity.pixelsPerSecond.dy * widget.displayHeight;

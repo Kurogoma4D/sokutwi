@@ -8,3 +8,5 @@ final updateTweetText = Provider.autoDispose((ref) {
     controller.state = text;
   };
 });
+
+final inputTweetText = Provider.autoDispose((ref) => ref.watch(_text));

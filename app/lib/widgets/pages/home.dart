@@ -150,11 +150,30 @@ class _StickyState extends State<_Sticky> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Positioned(
       bottom: _currentPosition,
+      left: 0,
+      right: 0,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onVerticalDragUpdate: _onVerticalDragUpdate,
         onVerticalDragEnd: _onVerticalDragEnd,
-        child: Placeholder(fallbackHeight: widget.height),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: SizedBox(
+            height: widget.height,
+            child: Card(
+              color: Colors.amber.shade50,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Center(
+                  child: TextField(
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(border: InputBorder.none),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

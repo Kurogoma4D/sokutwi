@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sokutwi/router.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/widgets/build_context_ex.dart';
+import 'package:sokutwi/widgets/components/tweet_card.dart';
 
 // Drag element codes Inspired from:
 // https://github.com/cb-cloud/flutter_in_app_notification/blob/main/lib/src/in_app_notification.dart
@@ -141,6 +142,7 @@ class _StickyState extends State<_Sticky> with SingleTickerProviderStateMixin {
   )..addListener(() => setState(() {}));
 
   late final neutralPosition = widget.displayHeight - widget.initialPosition;
+  final textFocus = FocusNode();
 
   double get _currentPosition =>
       _animationController.currentAnimation?.value ??
@@ -154,24 +156,15 @@ class _StickyState extends State<_Sticky> with SingleTickerProviderStateMixin {
       right: 0,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
+        onVerticalDragStart: (_) => textFocus.unfocus(),
         onVerticalDragUpdate: _onVerticalDragUpdate,
         onVerticalDragEnd: _onVerticalDragEnd,
+        onTap: () => textFocus.requestFocus(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: SizedBox(
             height: widget.height,
-            child: Card(
-              color: Colors.amber.shade50,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Center(
-                  child: TextField(
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(border: InputBorder.none),
-                  ),
-                ),
-              ),
-            ),
+            child: TweetCard(focus: textFocus),
           ),
         ),
       ),
@@ -181,6 +174,7 @@ class _StickyState extends State<_Sticky> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     _animationController.dispose();
+    textFocus.dispose();
     super.dispose();
   }
 

@@ -3,9 +3,9 @@ import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/usecases/twitter_sign_in.dart';
 
 final mockOverrides = [
-  postTweet.overrideWithValue((text) async {
+  postTweet.overrideWithValue(() async {
     await Future.delayed(const Duration(seconds: 1));
-    return TweetResult.done;
+    return const TweetResult.success();
   }),
   authTokenStore.overrideWith(
     (ref) => const AsyncData(TwitterToken(token: 'foo')),

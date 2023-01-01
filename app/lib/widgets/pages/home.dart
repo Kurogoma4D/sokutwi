@@ -11,18 +11,20 @@ import 'package:sokutwi/widgets/components/tweet_card.dart';
 // Drag element codes Inspired from:
 // https://github.com/cb-cloud/flutter_in_app_notification/blob/main/lib/src/in_app_notification.dart
 
-final _isShowingSticky = StateProvider((ref) => true);
-
-Future<TweetResult> _postTweet(WidgetRef ref) async {
-  const text = 'てすと';
-  return await ref.read(postTweet)(text);
-}
+final _isShowingSticky = StateProvider.autoDispose((ref) => true);
 
 void _actionAfterTweet(TweetResult result, BuildContext context) {
   final message = result.when(
-    done: () => context.string.doneTweet,
-    clientNotReady: () => context.string.clientNotReady,
-    rateLimitExceeded: () => context.string.tryLater,
+    success: () => context.string.doneTweet,
+    fail: (kind, error) => kind.when(
+      clientNotReady: () => context.string.clientNotReady,
+      rateLimitExceeded: () => context.string.tryLater,
+      other: () => error?.message ?? context.string.somethingWentWrong,
+    ),
+  );
+  final needSignIn = result.maybeWhen(
+    fail: (kind, _) => kind == TweetFailKind.clientNotReady,
+    orElse: () => false,
   );
   final signInAction = SnackBarAction(
     label: context.string.signIn,
@@ -31,7 +33,7 @@ void _actionAfterTweet(TweetResult result, BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(message),
-      action: result == TweetResult.clientNotReady ? signInAction : null,
+      action: needSignIn ? signInAction : null,
     ),
   );
 }
@@ -64,7 +66,7 @@ class _HomeState extends ConsumerState<Home> {
                   displayHeight: constraints.maxHeight,
                   onDone: () async {
                     ref.watch(_isShowingSticky.notifier).state = false;
-                    final result = await _postTweet(ref);
+                    final result = await ref.read(postTweet)();
                     // ignore: use_build_context_synchronously
                     if (!context.mounted) return;
                     _actionAfterTweet(result, context);

@@ -1,8 +1,9 @@
 {
-  "clientNotReady": "準備ができていません。ログインし直してください",
-  "doneTweet": "ツイートしました",
+  "clientNotReady": "なんかダメだったからログインし直してほしいな",
+  "doneTweet": "つぶやいた！",
   "home": "ホーム",
+  "pleaseSignIn": "ログインしてくれよな",
   "signIn": "ログイン",
-  "tryLater": "しばらく経ってからやり直してください",
-  "tweet": "ツイート"
+  "somethingWentWrong": "なんかうまくいかなかったっぽい",
+  "tryLater": "つぶやきすぎ〜 あとでやり直してくれ"
 }

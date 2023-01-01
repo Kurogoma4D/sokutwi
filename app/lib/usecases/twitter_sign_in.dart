@@ -18,6 +18,9 @@ class TwitterToken with _$TwitterToken {
 final authTokenStore =
     StateProvider<AsyncValue<TwitterToken>>((_) => const AsyncLoading());
 
+final isAlreadySignedIn = Provider.autoDispose(
+    (ref) => ref.watch(authTokenStore).asData?.value.token.isNotEmpty ?? false);
+
 final twitterSignInUsecase = Provider((ref) {
   return () async {
     final authClient = auth.TwitterOAuth2Client(
@@ -31,7 +34,7 @@ final twitterSignInUsecase = Provider((ref) {
 
     try {
       final response = await authClient.executeAuthCodeFlowWithPKCE(
-        scopes: auth.Scope.values,
+        scopes: [auth.Scope.tweetWrite],
       );
 
       if (response.accessToken.isEmpty) {

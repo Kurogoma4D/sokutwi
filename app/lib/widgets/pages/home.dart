@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sokutwi/router.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
+import 'package:sokutwi/usecases/twitter_sign_in.dart';
 import 'package:sokutwi/widgets/build_context_ex.dart';
+import 'package:sokutwi/widgets/components/sign_in_banner.dart';
 import 'package:sokutwi/widgets/components/tweet_card.dart';
 
 // Drag element codes Inspired from:
@@ -13,7 +14,11 @@ import 'package:sokutwi/widgets/components/tweet_card.dart';
 
 final _isShowingSticky = StateProvider.autoDispose((ref) => true);
 
-void _actionAfterTweet(TweetResult result, BuildContext context) {
+void _actionAfterTweet(
+  TweetResult result,
+  BuildContext context,
+  WidgetRef ref,
+) {
   final message = result.when(
     success: () => context.string.doneTweet,
     fail: (kind, error) => kind.when(
@@ -28,7 +33,7 @@ void _actionAfterTweet(TweetResult result, BuildContext context) {
   );
   final signInAction = SnackBarAction(
     label: context.string.signIn,
-    onPressed: () => SignInRoute().go(context),
+    onPressed: () => ref.read(twitterSignInUsecase)(),
   );
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -54,31 +59,48 @@ class _HomeState extends ConsumerState<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final isShowing = ref.watch(_isShowingSticky);
-    return AnnotatedRegion<SystemUiOverlayStyle>(
+    return const AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
-      child: Scaffold(
-        body: LayoutBuilder(
-          builder: (context, constraints) => Stack(
-            children: [
-              if (isShowing)
-                _Sticky(
-                  displayHeight: constraints.maxHeight,
-                  onDone: () async {
-                    ref.watch(_isShowingSticky.notifier).state = false;
-                    final result = await ref.read(postTweet)();
-                    // ignore: use_build_context_synchronously
-                    if (!context.mounted) return;
-                    _actionAfterTweet(result, context);
-                    ref.watch(_isShowingSticky.notifier).state = true;
-                  },
-                )
-              else
-                const Positioned.fill(
-                  child: CircularProgressIndicator.adaptive(),
-                ),
-            ],
-          ),
+      child: _Contents(),
+    );
+  }
+}
+
+class _Contents extends ConsumerWidget {
+  const _Contents({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isShowing = ref.watch(_isShowingSticky);
+    final isSignedIn = ref.watch(isAlreadySignedIn);
+    return Scaffold(
+      body: LayoutBuilder(
+        builder: (context, constraints) => Stack(
+          children: [
+            Positioned(
+              bottom: 64,
+              left: 16,
+              right: 16,
+              child:
+                  isSignedIn ? const SizedBox.shrink() : const SignInBanner(),
+            ),
+            if (isShowing)
+              _Sticky(
+                displayHeight: constraints.maxHeight,
+                onDone: () async {
+                  ref.watch(_isShowingSticky.notifier).state = false;
+                  final result = await ref.read(postTweet)();
+                  // ignore: use_build_context_synchronously
+                  if (!context.mounted) return;
+                  _actionAfterTweet(result, context, ref);
+                  ref.watch(_isShowingSticky.notifier).state = true;
+                },
+              )
+            else
+              const Positioned.fill(
+                child: CircularProgressIndicator.adaptive(),
+              ),
+          ],
         ),
       ),
     );
@@ -152,9 +174,14 @@ class _StickyState extends ConsumerState<_Sticky>
       _animationController.currentAnimation?.value ??
       (neutralPosition + _animationController.dragDistance);
 
+  bool get canPostTweet {
+    debugPrint(ref.read(inputTweetText));
+    debugPrint(ref.read(isAlreadySignedIn).toString());
+    return ref.read(inputTweetText).isNotEmpty && ref.read(isAlreadySignedIn);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final text = ref.watch(inputTweetText);
     return Positioned(
       bottom: _currentPosition,
       left: 0,
@@ -163,7 +190,7 @@ class _StickyState extends ConsumerState<_Sticky>
         behavior: HitTestBehavior.opaque,
         onVerticalDragStart: (_) => textFocus.unfocus(),
         onVerticalDragUpdate: _onVerticalDragUpdate,
-        onVerticalDragEnd: (details) => _onVerticalDragEnd(details, text),
+        onVerticalDragEnd: (details) => _onVerticalDragEnd(details),
         onTap: () => textFocus.requestFocus(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -191,8 +218,8 @@ class _StickyState extends ConsumerState<_Sticky>
     });
   }
 
-  void _onVerticalDragEnd(DragEndDetails details, String text) async {
-    if (text.isEmpty) {
+  void _onVerticalDragEnd(DragEndDetails details) async {
+    if (!canPostTweet) {
       await _stay();
       return;
     }

@@ -34,7 +34,11 @@ final twitterSignInUsecase = Provider((ref) {
 
     try {
       final response = await authClient.executeAuthCodeFlowWithPKCE(
-        scopes: auth.Scope.values,
+        scopes: [
+          auth.Scope.tweetWrite,
+          auth.Scope.tweetRead,
+          auth.Scope.usersRead,
+        ],
       );
 
       if (response.accessToken.isEmpty) {

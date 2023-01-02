@@ -1,29 +1,48 @@
+import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
 
-class TweetCard extends ConsumerWidget {
+class TweetCard extends ConsumerStatefulWidget {
   final FocusNode focus;
 
   const TweetCard({Key? key, required this.focus}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TweetCard> createState() => _TweetCardState();
+}
+
+class _TweetCardState extends ConsumerState<TweetCard> {
+  final _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
     return CustomPaint(
       painter: _CardPainter(),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Center(
-          child: TextField(
-            focusNode: focus,
+          child: AutoSizeTextField(
+            controller: _controller,
+            focusNode: widget.focus,
             onChanged: (value) => ref.read(updateTweetText)(value),
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.black54),
+            style: Theme.of(context)
+                .textTheme
+                .headlineLarge
+                ?.copyWith(color: Colors.black54),
+            minFontSize: 12,
             decoration: const InputDecoration(border: InputBorder.none),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
 

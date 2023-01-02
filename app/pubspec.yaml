@@ -23,6 +23,7 @@ dependencies:
   # UI
   flutter_native_splash: ^2.2.16
   gap: ^2.0.1
+  auto_size_text_field: ^2.1.0
   # Others
   twitter_api_v2: ^4.7.1
   twitter_oauth2_pkce: ^1.0.1

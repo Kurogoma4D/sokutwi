@@ -41,6 +41,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.10.0"
+  auto_size_text_field:
+    dependency: "direct main"
+    description:
+      name: auto_size_text_field
+      sha256: f111c3a27ce2116cb4af3f6f1d9d6dbb4a41a08d3de4d6ac39e7e9da4d575aab
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   boolean_selector:
     dependency: transitive
     description:

@@ -175,8 +175,6 @@ class _StickyState extends ConsumerState<_Sticky>
       (neutralPosition + _animationController.dragDistance);
 
   bool get canPostTweet {
-    debugPrint(ref.read(inputTweetText));
-    debugPrint(ref.read(isAlreadySignedIn).toString());
     return ref.read(inputTweetText).isNotEmpty && ref.read(isAlreadySignedIn);
   }
 

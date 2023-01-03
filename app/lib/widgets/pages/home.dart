@@ -74,6 +74,7 @@ class _Contents extends ConsumerWidget {
     final isShowing = ref.watch(_isShowingSticky);
     final isSignedIn = ref.watch(isAlreadySignedIn);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: LayoutBuilder(
         builder: (context, constraints) => Stack(
           children: [

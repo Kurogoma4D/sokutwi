@@ -35,7 +35,10 @@ class _Contents extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         scrollDirection: Axis.horizontal,
         children: [
-          const _PhraseCard(child: Icon(Icons.shuffle, color: Colors.black87)),
+          _PhraseCard(
+            child: const Icon(Icons.shuffle, color: Colors.black87),
+            onTap: () => ref.read(applySomePhrase)(phrases),
+          ),
           const Gap(16),
           for (final phrase in phrases) ...[
             _PhraseCard(
@@ -46,6 +49,7 @@ class _Contents extends ConsumerWidget {
                     .bodyLarge
                     ?.copyWith(color: Colors.black87),
               ),
+              onTap: () => ref.read(applyPhrase)(phrase),
             ),
             const Gap(16),
           ],

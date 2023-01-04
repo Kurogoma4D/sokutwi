@@ -17,6 +17,11 @@ class _TweetCardState extends ConsumerState<TweetCard> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(inputTweetText, (_, value) {
+      if (value == _controller.text) return;
+      _controller.text = value;
+    });
+
     return CustomPaint(
       painter: _CardPainter(),
       child: Padding(

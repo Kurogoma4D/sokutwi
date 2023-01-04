@@ -23,20 +23,23 @@ class _SignInBannerState extends ConsumerState<SignInBanner>
       onTap: () => ref.read(twitterSignInUsecase)(),
       child: AnimatedBuilder(
         animation: _animation,
-        builder: (context, child) => DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: Colors.amber.shade50,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.white24,
-                blurRadius: 16 * _animation.value,
-                spreadRadius: 4 * _animation.value,
-                offset: Offset.zero,
-              ),
-            ],
+        builder: (context, child) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.amber.shade50,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white24,
+                  blurRadius: 16 * _animation.value,
+                  spreadRadius: 4 * _animation.value,
+                  offset: Offset.zero,
+                ),
+              ],
+            ),
+            child: child,
           ),
-          child: child,
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),

@@ -85,7 +85,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Phrase` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` TEXT NOT NULL, `text` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `Phrase` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `text` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -103,15 +103,13 @@ class _$PhraseDao extends PhraseDao {
   _$PhraseDao(
     this.database,
     this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _phraseInsertionAdapter = InsertionAdapter(
             database,
             'Phrase',
-            (Phrase item) => <String, Object?>{
-                  'id': item.id,
-                  'userId': item.userId,
-                  'text': item.text
-                });
+            (Phrase item) =>
+                <String, Object?>{'id': item.id, 'text': item.text},
+            changeListener);
 
   final sqflite.DatabaseExecutor database;
 
@@ -122,13 +120,12 @@ class _$PhraseDao extends PhraseDao {
   final InsertionAdapter<Phrase> _phraseInsertionAdapter;
 
   @override
-  Future<List<Phrase>> findPhraseByUserId(String userId) async {
-    return _queryAdapter.queryList('SELECT * FROM Phrase WHERE userId = ?1',
-        mapper: (Map<String, Object?> row) => Phrase(
-            id: row['id'] as int,
-            userId: row['userId'] as String,
-            text: row['text'] as String),
-        arguments: [userId]);
+  Stream<List<Phrase>> obtainAllPhrases() {
+    return _queryAdapter.queryListStream('SELECT * FROM Phrase',
+        mapper: (Map<String, Object?> row) =>
+            Phrase(id: row['id'] as int?, text: row['text'] as String),
+        queryableName: 'Phrase',
+        isView: false);
   }
 
   @override

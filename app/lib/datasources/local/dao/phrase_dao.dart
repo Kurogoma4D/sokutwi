@@ -6,6 +6,6 @@ abstract class PhraseDao {
   @insert
   Future<void> addPhrase(Phrase phrase);
 
-  @Query('SELECT * FROM Phrase WHERE userId = :userId')
-  Future<List<Phrase>> findPhraseByUserId(String userId);
+  @Query('SELECT * FROM Phrase')
+  Stream<List<Phrase>> obtainAllPhrases();
 }

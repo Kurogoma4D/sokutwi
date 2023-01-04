@@ -6,6 +6,7 @@ import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
 import 'package:sokutwi/usecases/twitter_sign_in.dart';
 import 'package:sokutwi/widgets/build_context_ex.dart';
+import 'package:sokutwi/widgets/components/fixed_phrases.dart';
 import 'package:sokutwi/widgets/components/sign_in_banner.dart';
 import 'package:sokutwi/widgets/components/tweet_card.dart';
 
@@ -80,10 +81,9 @@ class _Contents extends ConsumerWidget {
           children: [
             Positioned(
               bottom: 64,
-              left: 16,
-              right: 16,
-              child:
-                  isSignedIn ? const SizedBox.shrink() : const SignInBanner(),
+              left: 0,
+              right: 0,
+              child: isSignedIn ? const FixedPhrase() : const SignInBanner(),
             ),
             if (isShowing)
               _Sticky(

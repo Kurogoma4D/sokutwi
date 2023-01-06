@@ -3,16 +3,25 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:sokutwi/constants/constants.dart';
 import 'package:sokutwi/constants/environment_config.dart';
 import 'package:sokutwi/constants/exceptions.dart';
+import 'package:sokutwi/datasources/secure_storage.dart';
 import 'package:twitter_oauth2_pkce/twitter_oauth2_pkce.dart' as auth;
 
 part 'twitter_sign_in.freezed.dart';
 
+const _tokenKey = 'token';
+const _refreshTokenKey = 'refreshToken';
+const _expireAtKey = 'expireAt';
+
 @freezed
 class TwitterToken with _$TwitterToken {
+  const TwitterToken._();
   const factory TwitterToken({
     @Default('') String token,
     @Default('') String refreshToken,
+    @Default(0) int expireAt,
   }) = _TwitterToken;
+
+  bool get isValid => token.isNotEmpty && refreshToken.isNotEmpty;
 }
 
 final authTokenStore =
@@ -21,7 +30,22 @@ final authTokenStore =
 final isAlreadySignedIn = Provider.autoDispose(
     (ref) => ref.watch(authTokenStore).asData?.value.token.isNotEmpty ?? false);
 
+final tryObtainAuthToken = Provider.autoDispose(
+  (ref) {
+    final controller = ref.watch(authTokenStore.notifier);
+
+    return () async {
+      final cachedToken = await ref.read(_obtainCachedAuthToken.future);
+      if (cachedToken.isValid) {
+        controller.state = AsyncData(cachedToken);
+      }
+    };
+  },
+);
+
 final twitterSignInUsecase = Provider((ref) {
+  final controller = ref.watch(authTokenStore.notifier);
+
   return () async {
     final authClient = auth.TwitterOAuth2Client(
       clientId: Env.twitterClientId,
@@ -30,14 +54,13 @@ final twitterSignInUsecase = Provider((ref) {
       customUriScheme: appCustomUrlScheme,
     );
 
-    final controller = ref.watch(authTokenStore.notifier);
-
     try {
       final response = await authClient.executeAuthCodeFlowWithPKCE(
         scopes: [
           auth.Scope.tweetWrite,
           auth.Scope.tweetRead,
           auth.Scope.usersRead,
+          auth.Scope.offlineAccess,
         ],
       );
 
@@ -49,10 +72,14 @@ final twitterSignInUsecase = Provider((ref) {
         return false;
       }
 
-      controller.state = AsyncData(TwitterToken(
+      final data = TwitterToken(
         token: response.accessToken,
         refreshToken: response.refreshToken ?? '',
-      ));
+        expireAt: response.expireAt.millisecondsSinceEpoch,
+      );
+      await ref.read(_persistentAuthToken)(data);
+
+      controller.state = AsyncData(data);
       return true;
     } catch (error) {
       controller.state = AsyncError(error, StackTrace.current);
@@ -62,6 +89,29 @@ final twitterSignInUsecase = Provider((ref) {
   };
 });
 
-// TODO: refresh token
+// TODO(Kurogoma4D): implement refresh token
+final refreshAuthToken = Provider.autoDispose((ref) {
+  return () {};
+});
 
-// TODO: persistant token
+final _persistentAuthToken = Provider.autoDispose((ref) {
+  final storage = ref.watch(secureStorage);
+  return (TwitterToken data) async {
+    await storage.write(key: _tokenKey, value: data.token);
+    await storage.write(key: _refreshTokenKey, value: data.refreshToken);
+    await storage.write(key: _expireAtKey, value: '${data.expireAt}');
+  };
+});
+
+final _obtainCachedAuthToken = FutureProvider.autoDispose((ref) async {
+  final storage = ref.watch(secureStorage);
+  final token = await storage.read(key: _tokenKey);
+  final refreshToken = await storage.read(key: _refreshTokenKey);
+  final expireAt = await storage.read(key: _expireAtKey);
+
+  return TwitterToken(
+    token: token ?? '',
+    refreshToken: refreshToken ?? '',
+    expireAt: int.tryParse(expireAt ?? '') ?? 0,
+  );
+});

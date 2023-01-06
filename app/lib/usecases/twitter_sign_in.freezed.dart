@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$TwitterToken {
   String get token => throw _privateConstructorUsedError;
   String get refreshToken => throw _privateConstructorUsedError;
+  int get expireAt => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TwitterTokenCopyWith<TwitterToken> get copyWith =>
@@ -30,7 +31,7 @@ abstract class $TwitterTokenCopyWith<$Res> {
           TwitterToken value, $Res Function(TwitterToken) then) =
       _$TwitterTokenCopyWithImpl<$Res, TwitterToken>;
   @useResult
-  $Res call({String token, String refreshToken});
+  $Res call({String token, String refreshToken, int expireAt});
 }
 
 /// @nodoc
@@ -48,6 +49,7 @@ class _$TwitterTokenCopyWithImpl<$Res, $Val extends TwitterToken>
   $Res call({
     Object? token = null,
     Object? refreshToken = null,
+    Object? expireAt = null,
   }) {
     return _then(_value.copyWith(
       token: null == token
@@ -58,6 +60,10 @@ class _$TwitterTokenCopyWithImpl<$Res, $Val extends TwitterToken>
           ? _value.refreshToken
           : refreshToken // ignore: cast_nullable_to_non_nullable
               as String,
+      expireAt: null == expireAt
+          ? _value.expireAt
+          : expireAt // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -70,7 +76,7 @@ abstract class _$$_TwitterTokenCopyWith<$Res>
       __$$_TwitterTokenCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String token, String refreshToken});
+  $Res call({String token, String refreshToken, int expireAt});
 }
 
 /// @nodoc
@@ -86,6 +92,7 @@ class __$$_TwitterTokenCopyWithImpl<$Res>
   $Res call({
     Object? token = null,
     Object? refreshToken = null,
+    Object? expireAt = null,
   }) {
     return _then(_$_TwitterToken(
       token: null == token
@@ -96,14 +103,20 @@ class __$$_TwitterTokenCopyWithImpl<$Res>
           ? _value.refreshToken
           : refreshToken // ignore: cast_nullable_to_non_nullable
               as String,
+      expireAt: null == expireAt
+          ? _value.expireAt
+          : expireAt // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
 
 /// @nodoc
 
-class _$_TwitterToken implements _TwitterToken {
-  const _$_TwitterToken({this.token = '', this.refreshToken = ''});
+class _$_TwitterToken extends _TwitterToken {
+  const _$_TwitterToken(
+      {this.token = '', this.refreshToken = '', this.expireAt = 0})
+      : super._();
 
   @override
   @JsonKey()
@@ -111,10 +124,13 @@ class _$_TwitterToken implements _TwitterToken {
   @override
   @JsonKey()
   final String refreshToken;
+  @override
+  @JsonKey()
+  final int expireAt;
 
   @override
   String toString() {
-    return 'TwitterToken(token: $token, refreshToken: $refreshToken)';
+    return 'TwitterToken(token: $token, refreshToken: $refreshToken, expireAt: $expireAt)';
   }
 
   @override
@@ -124,11 +140,13 @@ class _$_TwitterToken implements _TwitterToken {
             other is _$_TwitterToken &&
             (identical(other.token, token) || other.token == token) &&
             (identical(other.refreshToken, refreshToken) ||
-                other.refreshToken == refreshToken));
+                other.refreshToken == refreshToken) &&
+            (identical(other.expireAt, expireAt) ||
+                other.expireAt == expireAt));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, token, refreshToken);
+  int get hashCode => Object.hash(runtimeType, token, refreshToken, expireAt);
 
   @JsonKey(ignore: true)
   @override
@@ -137,14 +155,19 @@ class _$_TwitterToken implements _TwitterToken {
       __$$_TwitterTokenCopyWithImpl<_$_TwitterToken>(this, _$identity);
 }
 
-abstract class _TwitterToken implements TwitterToken {
-  const factory _TwitterToken({final String token, final String refreshToken}) =
-      _$_TwitterToken;
+abstract class _TwitterToken extends TwitterToken {
+  const factory _TwitterToken(
+      {final String token,
+      final String refreshToken,
+      final int expireAt}) = _$_TwitterToken;
+  const _TwitterToken._() : super._();
 
   @override
   String get token;
   @override
   String get refreshToken;
+  @override
+  int get expireAt;
   @override
   @JsonKey(ignore: true)
   _$$_TwitterTokenCopyWith<_$_TwitterToken> get copyWith =>

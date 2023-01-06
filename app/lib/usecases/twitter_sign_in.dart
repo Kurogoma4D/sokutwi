@@ -5,6 +5,7 @@ import 'package:sokutwi/constants/environment_config.dart';
 import 'package:sokutwi/constants/exceptions.dart';
 import 'package:sokutwi/datasources/secure_storage.dart';
 import 'package:twitter_oauth2_pkce/twitter_oauth2_pkce.dart' as auth;
+import 'package:twitter_api_v2/twitter_api_v2.dart' as v2;
 
 part 'twitter_sign_in.freezed.dart';
 
@@ -38,12 +39,17 @@ final tryObtainAuthToken = Provider.autoDispose(
       final cachedToken = await ref.read(_obtainCachedAuthToken.future);
       if (cachedToken.isValid) {
         controller.state = AsyncData(cachedToken);
+        return;
+      }
+
+      if (cachedToken.expireAt < DateTime.now().millisecondsSinceEpoch) {
+        ref.read(refreshAuthToken)(cachedToken.refreshToken);
       }
     };
   },
 );
 
-final twitterSignInUsecase = Provider((ref) {
+final twitterSignInUsecase = Provider.autoDispose((ref) {
   final controller = ref.watch(authTokenStore.notifier);
 
   return () async {
@@ -89,9 +95,36 @@ final twitterSignInUsecase = Provider((ref) {
   };
 });
 
-// TODO(Kurogoma4D): implement refresh token
 final refreshAuthToken = Provider.autoDispose((ref) {
-  return () {};
+  final controller = ref.watch(authTokenStore.notifier);
+
+  return (String token) async {
+    if (token.isEmpty) return;
+
+    final response = await v2.OAuthUtils.refreshAccessToken(
+      clientId: Env.twitterClientId,
+      clientSecret: Env.twitterClientSecret,
+      refreshToken: token,
+    );
+
+    if (response.accessToken.isEmpty) {
+      controller.state = AsyncError(
+        const UnauthorizedError(),
+        StackTrace.current,
+      );
+      return;
+    }
+
+    final data = TwitterToken(
+      token: response.accessToken,
+      refreshToken: response.refreshToken,
+      expireAt: response.expiresAt.millisecondsSinceEpoch,
+    );
+    await ref.read(_persistentAuthToken)(data);
+
+    controller.state = AsyncData(data);
+    return;
+  };
 });
 
 final _persistentAuthToken = Provider.autoDispose((ref) {

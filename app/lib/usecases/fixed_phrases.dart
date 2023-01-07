@@ -22,6 +22,7 @@ final obtainSavedPhrases = StreamProvider.autoDispose(
     return database.phraseDao.obtainAllPhrases().map((phrases) =>
         phrases.map((e) => PhraseData(id: e.id ?? 0, text: e.text)));
   },
+  dependencies: [appDatabase],
 );
 
 final _canSavePhrase = FutureProvider.autoDispose((ref) async {

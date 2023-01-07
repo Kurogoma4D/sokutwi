@@ -54,10 +54,7 @@ class Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<Home> {
   @override
   void initState() {
-    Future.microtask(() async {
-      await ref.read(tryObtainAuthToken)();
-      FlutterNativeSplash.remove();
-    });
+    FlutterNativeSplash.remove();
     super.initState();
   }
 

@@ -31,24 +31,6 @@ final authTokenStore =
 final isAlreadySignedIn = Provider.autoDispose(
     (ref) => ref.watch(authTokenStore).asData?.value.token.isNotEmpty ?? false);
 
-final tryObtainAuthToken = Provider.autoDispose(
-  (ref) {
-    final controller = ref.watch(authTokenStore.notifier);
-
-    return () async {
-      final cachedToken = await ref.read(_obtainCachedAuthToken.future);
-      if (cachedToken.isValid) {
-        controller.state = AsyncData(cachedToken);
-        return;
-      }
-
-      if (cachedToken.expireAt < DateTime.now().millisecondsSinceEpoch) {
-        ref.read(refreshAuthToken)(cachedToken.refreshToken);
-      }
-    };
-  },
-);
-
 final twitterSignInUsecase = Provider.autoDispose((ref) {
   final controller = ref.watch(authTokenStore.notifier);
 
@@ -136,7 +118,7 @@ final _persistentAuthToken = Provider.autoDispose((ref) {
   };
 });
 
-final _obtainCachedAuthToken = FutureProvider.autoDispose((ref) async {
+final obtainCachedAuthToken = FutureProvider((ref) async {
   final storage = ref.watch(secureStorage);
   final token = await storage.read(key: _tokenKey);
   final refreshToken = await storage.read(key: _refreshTokenKey);

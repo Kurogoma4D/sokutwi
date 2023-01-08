@@ -6,8 +6,6 @@ import 'package:sokutwi/datasources/local/database/database.dart';
 import 'package:sokutwi/mock_overrides.dart';
 import 'package:sokutwi/usecases/twitter_sign_in.dart';
 
-final _rootContainer = ProviderContainer();
-
 void main() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: binding);
@@ -15,14 +13,17 @@ void main() async {
   final database =
       await $FloorAppDatabase.databaseBuilder('app_database.db').build();
 
-  await _rootContainer.read(tryObtainAuthToken)();
+  final rootContainer = ProviderContainer(
+    overrides: [
+      appDatabase.overrideWithValue(database),
+      if (const bool.fromEnvironment('mock')) ...mockOverrides,
+    ],
+  );
+
+  await rootContainer.read(tryObtainAuthToken)();
 
   runApp(ProviderScope(
-    overrides: [
-      if (const bool.fromEnvironment('mock')) ...mockOverrides,
-      appDatabase.overrideWithValue(database),
-    ],
-    parent: _rootContainer,
+    parent: rootContainer,
     child: const App(),
   ));
 }

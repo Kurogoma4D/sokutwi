@@ -109,6 +109,13 @@ class _$PhraseDao extends PhraseDao {
             'Phrase',
             (Phrase item) =>
                 <String, Object?>{'id': item.id, 'text': item.text},
+            changeListener),
+        _phraseDeletionAdapter = DeletionAdapter(
+            database,
+            'Phrase',
+            ['id'],
+            (Phrase item) =>
+                <String, Object?>{'id': item.id, 'text': item.text},
             changeListener);
 
   final sqflite.DatabaseExecutor database;
@@ -118,6 +125,8 @@ class _$PhraseDao extends PhraseDao {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<Phrase> _phraseInsertionAdapter;
+
+  final DeletionAdapter<Phrase> _phraseDeletionAdapter;
 
   @override
   Stream<List<Phrase>> obtainAllPhrases() {
@@ -131,5 +140,10 @@ class _$PhraseDao extends PhraseDao {
   @override
   Future<void> addPhrase(Phrase phrase) async {
     await _phraseInsertionAdapter.insert(phrase, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deletePhrase(Phrase phrase) async {
+    await _phraseDeletionAdapter.delete(phrase);
   }
 }

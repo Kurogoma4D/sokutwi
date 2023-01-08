@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sokutwi/datasources/local/database/database.dart';
+import 'package:sokutwi/datasources/local/entity/phrase.dart';
 import 'package:sokutwi/usecases/fixed_phrases.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/usecases/twitter_sign_in.dart';
@@ -11,10 +13,12 @@ final mockOverrides = [
   authTokenStore.overrideWith(
     (ref) => const AsyncData(TwitterToken(token: 'foo')),
   ),
-  obtainSavedPhrases.overrideWith(
-    (ref) async* {
-      yield List.generate(20, (i) => PhraseData(id: i, text: '#$i'));
-    },
-  ),
-  savePhrase.overrideWithValue(() async {}),
 ];
+
+Future<void> initiateDatabase(AppDatabase database) async {
+  final phrases = List.generate(20, (i) => PhraseData(id: i, text: '#$i'));
+  await database.database.delete('Phrase');
+  for (final phrase in phrases) {
+    await database.phraseDao.addPhrase(Phrase(text: phrase.text));
+  }
+}

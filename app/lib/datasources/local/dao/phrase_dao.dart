@@ -8,4 +8,7 @@ abstract class PhraseDao {
 
   @Query('SELECT * FROM Phrase')
   Stream<List<Phrase>> obtainAllPhrases();
+
+  @delete
+  Future<void> deletePhrase(Phrase phrase);
 }

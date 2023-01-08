@@ -1,6 +1,7 @@
 {
   "appNeedsSignIn": "これ使うにはログインいるのでやってくれな",
   "clientNotReady": "なんかダメだったからログインし直してほしいな",
+  "delete": "消す",
   "doneTweet": "つぶやいた！",
   "home": "ホーム",
   "pleaseSignIn": "ログインしてくれよな",

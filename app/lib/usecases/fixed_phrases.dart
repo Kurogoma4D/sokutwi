@@ -58,3 +58,10 @@ final applySomePhrase = Provider.autoDispose(
     ref.read(updateTweetText)(randomized.first.text);
   },
 );
+
+final deletePhrase = Provider.autoDispose(
+  (ref) => (PhraseData data) async {
+    final database = ref.read(appDatabase);
+    await database.phraseDao.deletePhrase(Phrase(id: data.id, text: data.text));
+  },
+);

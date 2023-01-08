@@ -10,13 +10,17 @@ void main() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: binding);
 
+  const isMock = bool.fromEnvironment('mock');
+
   final database =
       await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+
+  if (isMock) await initiateDatabase(database);
 
   final rootContainer = ProviderContainer(
     overrides: [
       appDatabase.overrideWithValue(database),
-      if (const bool.fromEnvironment('mock')) ...mockOverrides,
+      if (isMock) ...mockOverrides,
     ],
   );
 

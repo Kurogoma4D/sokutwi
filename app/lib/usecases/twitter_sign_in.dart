@@ -91,6 +91,15 @@ final twitterSignInUsecase = Provider.autoDispose((ref) {
   };
 });
 
+final twitterSignOutUsecase = Provider.autoDispose((ref) {
+  final controller = ref.watch(authTokenStore.notifier);
+  final storage = ref.watch(secureStorage);
+  return () {
+    storage.deleteAll();
+    controller.state = const AsyncData(TwitterToken());
+  };
+});
+
 final refreshAuthToken = Provider.autoDispose((ref) {
   final controller = ref.watch(authTokenStore.notifier);
 

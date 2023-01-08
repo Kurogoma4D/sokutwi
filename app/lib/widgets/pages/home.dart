@@ -79,6 +79,11 @@ class _Contents extends ConsumerWidget {
       body: LayoutBuilder(
         builder: (context, constraints) => Stack(
           children: [
+            const Positioned(
+              top: 0,
+              right: 0,
+              child: SafeArea(child: _Menu()),
+            ),
             Positioned(
               bottom: 64,
               left: 0,
@@ -103,6 +108,32 @@ class _Contents extends ConsumerWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _Menu extends ConsumerWidget {
+  const _Menu({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SubmenuButton(
+      style: SubmenuButton.styleFrom(
+        shape: const CircleBorder(),
+      ),
+      // 前後に空の要素を入れると内部でpaddingがついてちょうど良い感じになる
+      leadingIcon: const SizedBox.shrink(),
+      trailingIcon: const SizedBox.shrink(),
+      menuChildren: [
+        MenuItemButton(
+          onPressed: () => ref.read(twitterSignOutUsecase)(),
+          child: Text(context.string.signOut),
+        )
+      ],
+      child: const Icon(
+        Icons.menu,
+        color: Colors.white,
       ),
     );
   }

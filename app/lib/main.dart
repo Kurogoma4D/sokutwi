@@ -15,15 +15,7 @@ void main() async {
   final database =
       await $FloorAppDatabase.databaseBuilder('app_database.db').build();
 
-  final controller = _rootContainer.read(authTokenStore.notifier);
-  final cachedToken = await _rootContainer.read(obtainCachedAuthToken.future);
-  if (cachedToken.isValid) {
-    controller.state = AsyncData(cachedToken);
-  }
-
-  if (cachedToken.expireAt < DateTime.now().millisecondsSinceEpoch) {
-    _rootContainer.read(refreshAuthToken)(cachedToken.refreshToken);
-  }
+  await _rootContainer.read(tryObtainAuthToken)();
 
   runApp(ProviderScope(
     overrides: [

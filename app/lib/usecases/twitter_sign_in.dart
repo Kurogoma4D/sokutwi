@@ -28,6 +28,20 @@ class TwitterToken with _$TwitterToken {
 final authTokenStore =
     StateProvider<AsyncValue<TwitterToken>>((_) => const AsyncLoading());
 
+final tryObtainAuthToken = Provider.autoDispose((ref) {
+  return () async {
+    final controller = ref.read(authTokenStore.notifier);
+    final cachedToken = await ref.read(obtainCachedAuthToken.future);
+    if (cachedToken.isValid) {
+      controller.state = AsyncData(cachedToken);
+    }
+
+    if (cachedToken.expireAt < DateTime.now().millisecondsSinceEpoch) {
+      ref.read(refreshAuthToken)(cachedToken.refreshToken);
+    }
+  };
+});
+
 final isAlreadySignedIn = Provider.autoDispose(
     (ref) => ref.watch(authTokenStore).asData?.value.token.isNotEmpty ?? false);
 

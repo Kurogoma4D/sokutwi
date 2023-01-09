@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sokutwi/usecases/fixed_phrases.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
 import 'package:sokutwi/usecases/twitter_sign_in.dart';
@@ -129,7 +130,19 @@ class _Menu extends ConsumerWidget {
         MenuItemButton(
           onPressed: () => ref.read(twitterSignOutUsecase)(),
           child: Text(context.string.signOut),
-        )
+        ),
+        MenuItemButton(
+          onPressed: () async {
+            final controller = ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(context.string.exporting),
+              ),
+            );
+            await ref.read(exportPhrases)();
+            controller.close();
+          },
+          child: Text(context.string.exportFixedPhrases),
+        ),
       ],
       child: const Icon(
         Icons.menu,

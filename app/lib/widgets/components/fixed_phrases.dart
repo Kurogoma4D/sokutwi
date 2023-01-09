@@ -144,7 +144,7 @@ class _Card extends StatelessWidget {
 }
 
 class _MenuChip extends StatefulWidget {
-  const _MenuChip({super.key, this.onTap});
+  const _MenuChip({this.onTap});
 
   final VoidCallback? onTap;
 

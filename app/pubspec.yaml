@@ -35,7 +35,9 @@ dependencies:
   path_provider: ^2.0.11
   share_plus: ^6.3.0
   csv: ^5.0.1
-  # file_picker: ^5.2.4
+  file_picker:
+    # TODO(Kurogoma4D): https://github.com/miguelpruivo/flutter_file_picker/issues/1208 がcloseしたらリリースバージョンに戻す
+    git: https://github.com/tomk9/flutter_file_picker.git
 
 dev_dependencies:
   flutter_test:

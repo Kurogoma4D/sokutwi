@@ -146,4 +146,18 @@ class _$PhraseDao extends PhraseDao {
   Future<void> deletePhrase(Phrase phrase) async {
     await _phraseDeletionAdapter.delete(phrase);
   }
+
+  @override
+  Future<void> addPhrases(Iterable<Phrase> phrases) async {
+    if (database is sqflite.Transaction) {
+      await super.addPhrases(phrases);
+    } else {
+      await (database as sqflite.Database)
+          .transaction<void>((transaction) async {
+        final transactionDatabase = _$AppDatabase(changeListener)
+          ..database = transaction;
+        await transactionDatabase.phraseDao.addPhrases(phrases);
+      });
+    }
+  }
 }

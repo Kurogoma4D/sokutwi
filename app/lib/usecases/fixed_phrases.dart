@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:csv/csv.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -47,9 +48,24 @@ final savePhrase = Provider.autoDispose(
       final canSave = (await ref.read(_canSavePhrase.future))(text);
       if (!canSave) return;
 
-      final database = ref.watch(appDatabase);
+      final database = ref.read(appDatabase);
       await database.phraseDao.addPhrase(Phrase(text: text));
     };
+  },
+);
+
+final _saveMultiplePhrases = Provider.autoDispose(
+  (ref) => (Iterable<String> texts) async {
+    final database = ref.read(appDatabase);
+    final phrases = texts.map((e) => Phrase(text: e));
+
+    final appendablePhrase = <Phrase>[];
+    for (final phrase in phrases) {
+      final canSave = (await ref.read(_canSavePhrase.future))(phrase.text);
+      if (canSave) appendablePhrase.add(phrase);
+    }
+
+    await database.phraseDao.addPhrases(appendablePhrase);
   },
 );
 
@@ -75,7 +91,27 @@ final deletePhrase = Provider.autoDispose(
   },
 );
 
-final importPhrases = Provider.autoDispose((ref) => () async {});
+final importPhrases = Provider.autoDispose(
+  (ref) => () async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+      withData: true,
+    );
+
+    final path = result?.paths.first;
+    if (path == null) return;
+    final file = File(path);
+
+    final csv = await file.readAsString();
+    final phraseStrings = const CsvToListConverter().convert(csv);
+
+    if (phraseStrings.isEmpty) return;
+
+    final phrases = phraseStrings.first.map((e) => e as String);
+    await ref.read(_saveMultiplePhrases)(phrases);
+  },
+);
 
 final exportPhrases = Provider.autoDispose(
   (ref) => () async {

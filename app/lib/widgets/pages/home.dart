@@ -135,6 +135,18 @@ class _Menu extends ConsumerWidget {
           onPressed: () async {
             final controller = ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
+                content: Text(context.string.importing),
+              ),
+            );
+            await ref.read(importPhrases)();
+            controller.close();
+          },
+          child: Text(context.string.importFixedPhrases),
+        ),
+        MenuItemButton(
+          onPressed: () async {
+            final controller = ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
                 content: Text(context.string.exporting),
               ),
             );

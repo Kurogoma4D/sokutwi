@@ -11,4 +11,11 @@ abstract class PhraseDao {
 
   @delete
   Future<void> deletePhrase(Phrase phrase);
+
+  @transaction
+  Future<void> addPhrases(Iterable<Phrase> phrases) async {
+    for (final phrase in phrases) {
+      await addPhrase(phrase);
+    }
+  }
 }

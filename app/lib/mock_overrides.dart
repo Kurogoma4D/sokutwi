@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sokutwi/datasources/local/database/database.dart';
 import 'package:sokutwi/datasources/local/entity/phrase.dart';
@@ -16,7 +18,11 @@ final mockOverrides = [
 ];
 
 Future<void> initiateDatabase(AppDatabase database) async {
-  final phrases = List.generate(20, (i) => PhraseData(id: i, text: '#$i'));
+  final random = Random();
+  final phrases = List.generate(
+    20,
+    (i) => PhraseData(id: i, text: '#${random.nextInt(12000) * i}'),
+  );
   await database.database.delete('Phrase');
   for (final phrase in phrases) {
     await database.phraseDao.addPhrase(Phrase(text: phrase.text));

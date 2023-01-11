@@ -75,12 +75,12 @@ final applyPhrase = Provider.autoDispose(
   },
 );
 
-final applySomePhrase = Provider.autoDispose(
+final obtainRandomPhrase = Provider.autoDispose(
   (ref) => (Iterable<PhraseData> phrases) {
-    if (phrases.isEmpty) return;
+    if (phrases.isEmpty) return const PhraseData(id: 0, text: '');
 
     final randomized = [...phrases]..shuffle();
-    ref.read(updateTweetText)(randomized.first.text);
+    return randomized.first;
   },
 );
 

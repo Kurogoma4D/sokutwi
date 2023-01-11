@@ -39,6 +39,22 @@ class FixedPhrase extends ConsumerWidget {
   }
 }
 
+Future<void> _animatePhrase({
+  required BuildContext context,
+  required Offset origin,
+  required Offset target,
+  required Widget card,
+}) async {
+  final overlay = createPhraseAnimationOverlay(
+    origin,
+    target,
+    card,
+  );
+  Navigator.of(context).overlay?.insert(overlay);
+  await Future.delayed(fixedPhraseAnimationDuration);
+  overlay.remove();
+}
+
 class _Contents extends ConsumerWidget {
   const _Contents({required this.phrases});
 
@@ -55,9 +71,14 @@ class _Contents extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         scrollDirection: Axis.horizontal,
         children: [
-          _Card(
-            child: const Icon(Icons.shuffle, color: Colors.black87),
-            onTap: () => ref.read(applySomePhrase)(phrases),
+          _RandomPhraseCard(
+            phrases: phrases,
+            onTap: (position, widget) => _animatePhrase(
+              context: context,
+              origin: position,
+              target: animationTargetPosition,
+              card: widget,
+            ),
           ),
           const Gap(16),
           for (final phrase in phrases) ...[
@@ -66,16 +87,12 @@ class _Contents extends ConsumerWidget {
                 _phraseReference.overrideWithValue(phrase),
               ],
               child: _PhraseCard(
-                onTap: (position, widget) async {
-                  final overlay = createPhraseAnimationOverlay(
-                    position,
-                    animationTargetPosition,
-                    widget,
-                  );
-                  Navigator.of(context).overlay?.insert(overlay);
-                  await Future.delayed(fixedPhraseAnimationDuration);
-                  overlay.remove();
-                },
+                onTap: (position, widget) => _animatePhrase(
+                  context: context,
+                  origin: position,
+                  target: animationTargetPosition,
+                  card: widget,
+                ),
               ),
             ),
             const Gap(16),
@@ -86,6 +103,45 @@ class _Contents extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _RandomPhraseCard extends ConsumerWidget {
+  const _RandomPhraseCard({required this.phrases, required this.onTap});
+
+  final Iterable<PhraseData> phrases;
+  final OnTapPhraseCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final key = GlobalKey();
+
+    Widget card(String text) => _Card(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              text,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(color: Colors.black87),
+            ),
+          ),
+        );
+
+    return _Card(
+      key: key,
+      child: const Icon(Icons.shuffle, color: Colors.black87),
+      onTap: () async {
+        final selfRenderBox =
+            key.currentContext?.findRenderObject() as RenderBox?;
+        final selfPosition =
+            selfRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+        final phrase = ref.read(obtainRandomPhrase)(phrases);
+        await onTap(selfPosition, card(phrase.text));
+        ref.read(applyPhrase)(phrase);
+      },
     );
   }
 }
@@ -160,6 +216,7 @@ class _PhraseCard extends ConsumerWidget {
 
 class _Card extends StatefulWidget {
   const _Card({
+    super.key,
     required this.child,
     this.onTap,
     this.onLongPress,

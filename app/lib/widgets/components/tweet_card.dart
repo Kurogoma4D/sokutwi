@@ -63,11 +63,34 @@ class _CardPainter extends CustomPainter {
     final path = Path()
       ..lineTo(size.width, 0.0)
       ..lineTo(size.width + 4.0, size.height)
-      ..lineTo(4.0, size.height - 2.0)
+      ..cubicTo(
+        size.width / 2,
+        size.height,
+        size.width / 3,
+        size.height / 18 * 17,
+        4.0,
+        size.height / 20 * 19.8,
+      )
+      ..relativeLineTo(0, -2.0)
       ..relativeLineTo(-2.6, -size.height / 3)
       ..close();
 
-    canvas.drawShadow(path, Colors.amber.shade50.withOpacity(0.8), 16, true);
+    final shadowPath = Path()
+      ..lineTo(size.width, 0.0)
+      ..lineTo(size.width + 4.0, size.height - 8.0)
+      ..cubicTo(
+        size.width / 2,
+        size.height / 18 * 17.8,
+        size.width / 3,
+        size.height / 18 * 18.6,
+        4.0,
+        size.height / 20 * 18,
+      )
+      ..relativeLineTo(0, -2.0)
+      ..relativeLineTo(-2.6, -size.height / 3)
+      ..close();
+
+    canvas.drawShadow(shadowPath, Colors.amber.shade50, 16, true);
     canvas.drawPath(path, p);
   }
 

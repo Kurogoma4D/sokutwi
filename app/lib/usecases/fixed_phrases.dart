@@ -5,10 +5,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:sokutwi/datasources/local/database/database.dart';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
+import 'package:sokutwi/datasources/local/box.dart';
 import 'package:sokutwi/datasources/local/entity/phrase.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
 
@@ -17,7 +17,7 @@ part 'fixed_phrases.freezed.dart';
 @freezed
 class PhraseData with _$PhraseData {
   const factory PhraseData({
-    required int id,
+    Object? id,
     required String text,
   }) = _PhraseData;
 }
@@ -27,12 +27,18 @@ final _temporaryPath = FutureProvider(
 );
 
 final obtainSavedPhrases = StreamProvider.autoDispose(
-  (ref) {
-    final database = ref.watch(appDatabase);
-    return database.phraseDao.obtainAllPhrases().map((phrases) =>
-        phrases.map((e) => PhraseData(id: e.id ?? 0, text: e.text)));
+  (ref) async* {
+    final box = ref.watch(phrasesBox);
+    if (ref.state.isLoading) {
+      yield box.values.map((e) => PhraseData(id: e.key, text: e.text));
+    }
+
+    final stream = box.watch();
+
+    await for (final _ in stream) {
+      yield box.values.map((e) => PhraseData(id: e.key, text: e.text));
+    }
   },
-  dependencies: [appDatabase],
 );
 
 final _canSavePhrase = FutureProvider.autoDispose((ref) async {
@@ -48,15 +54,15 @@ final savePhrase = Provider.autoDispose(
       final canSave = (await ref.read(_canSavePhrase.future))(text);
       if (!canSave) return;
 
-      final database = ref.read(appDatabase);
-      await database.phraseDao.addPhrase(Phrase(text: text));
+      final box = ref.read(phrasesBox);
+      await box.add(Phrase(text: text));
     };
   },
 );
 
 final _saveMultiplePhrases = Provider.autoDispose(
   (ref) => (Iterable<String> texts) async {
-    final database = ref.read(appDatabase);
+    final box = ref.read(phrasesBox);
     final phrases = texts.map((e) => Phrase(text: e));
 
     final appendablePhrase = <Phrase>[];
@@ -65,7 +71,7 @@ final _saveMultiplePhrases = Provider.autoDispose(
       if (canSave) appendablePhrase.add(phrase);
     }
 
-    await database.phraseDao.addPhrases(appendablePhrase);
+    await box.addAll(appendablePhrase);
   },
 );
 
@@ -86,8 +92,9 @@ final obtainRandomPhrase = Provider.autoDispose(
 
 final deletePhrase = Provider.autoDispose(
   (ref) => (PhraseData data) async {
-    final database = ref.read(appDatabase);
-    await database.phraseDao.deletePhrase(Phrase(id: data.id, text: data.text));
+    final box = ref.read(phrasesBox);
+
+    await box.delete(data.id);
   },
 );
 

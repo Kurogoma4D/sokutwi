@@ -1,10 +1,11 @@
-import 'package:floor/floor.dart';
+import 'package:hive/hive.dart';
 
-@entity
-class Phrase {
-  @PrimaryKey(autoGenerate: true)
-  final int? id;
+part 'phrase.g.dart';
+
+@HiveType(typeId: 0)
+class Phrase extends HiveObject {
+  @HiveField(0)
   final String text;
 
-  Phrase({this.id, required this.text});
+  Phrase({required this.text});
 }

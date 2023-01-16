@@ -1,9 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sokutwi/datasources/local/database/database.dart';
+import 'package:hive/hive.dart';
 import 'package:sokutwi/datasources/local/entity/phrase.dart';
-import 'package:sokutwi/usecases/fixed_phrases.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/usecases/twitter_sign_in.dart';
 
@@ -17,14 +16,12 @@ final mockOverrides = [
   ),
 ];
 
-Future<void> initiateDatabase(AppDatabase database) async {
+Future<void> initiateDatabase(Box<Phrase> box) async {
   final random = Random();
   final phrases = List.generate(
     20,
-    (i) => PhraseData(id: i, text: '#${random.nextInt(12000) * i}'),
+    (i) => Phrase(text: '#${random.nextInt(12000) * i}'),
   );
-  await database.database.delete('Phrase');
-  for (final phrase in phrases) {
-    await database.phraseDao.addPhrase(Phrase(text: phrase.text));
-  }
+  await box.clear();
+  await box.addAll(phrases);
 }

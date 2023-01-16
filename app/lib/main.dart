@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sokutwi/app.dart';
-import 'package:sokutwi/datasources/local/database/database.dart';
+import 'package:sokutwi/datasources/local/box.dart';
+import 'package:sokutwi/datasources/local/entity/phrase.dart';
 import 'package:sokutwi/mock_overrides.dart';
 import 'package:sokutwi/usecases/twitter_sign_in.dart';
 
 void main() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: binding);
+  await Hive.initFlutter();
+  Hive.registerAdapter(PhraseAdapter());
 
   const isMock = bool.fromEnvironment('mock');
 
-  final database =
-      await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  final box = await phrasesHiveBox;
 
-  if (isMock) await initiateDatabase(database);
+  if (isMock) await initiateDatabase(box);
 
   final rootContainer = ProviderContainer(
     overrides: [
-      appDatabase.overrideWithValue(database),
+      phrasesBox.overrideWithValue(box),
       if (isMock) ...mockOverrides,
     ],
   );

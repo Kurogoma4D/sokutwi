@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$PhraseData {
-  int get id => throw _privateConstructorUsedError;
+  Object? get id => throw _privateConstructorUsedError;
   String get text => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -30,7 +30,7 @@ abstract class $PhraseDataCopyWith<$Res> {
           PhraseData value, $Res Function(PhraseData) then) =
       _$PhraseDataCopyWithImpl<$Res, PhraseData>;
   @useResult
-  $Res call({int id, String text});
+  $Res call({Object? id, String text});
 }
 
 /// @nodoc
@@ -46,14 +46,11 @@ class _$PhraseDataCopyWithImpl<$Res, $Val extends PhraseData>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? id = freezed,
     Object? text = null,
   }) {
     return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
+      id: freezed == id ? _value.id : id,
       text: null == text
           ? _value.text
           : text // ignore: cast_nullable_to_non_nullable
@@ -70,7 +67,7 @@ abstract class _$$_PhraseDataCopyWith<$Res>
       __$$_PhraseDataCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String text});
+  $Res call({Object? id, String text});
 }
 
 /// @nodoc
@@ -84,14 +81,11 @@ class __$$_PhraseDataCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? id = freezed,
     Object? text = null,
   }) {
     return _then(_$_PhraseData(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
+      id: freezed == id ? _value.id : id,
       text: null == text
           ? _value.text
           : text // ignore: cast_nullable_to_non_nullable
@@ -103,10 +97,10 @@ class __$$_PhraseDataCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_PhraseData with DiagnosticableTreeMixin implements _PhraseData {
-  const _$_PhraseData({required this.id, required this.text});
+  const _$_PhraseData({this.id, required this.text});
 
   @override
-  final int id;
+  final Object? id;
   @override
   final String text;
 
@@ -129,12 +123,13 @@ class _$_PhraseData with DiagnosticableTreeMixin implements _PhraseData {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_PhraseData &&
-            (identical(other.id, id) || other.id == id) &&
+            const DeepCollectionEquality().equals(other.id, id) &&
             (identical(other.text, text) || other.text == text));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, text);
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(id), text);
 
   @JsonKey(ignore: true)
   @override
@@ -144,11 +139,11 @@ class _$_PhraseData with DiagnosticableTreeMixin implements _PhraseData {
 }
 
 abstract class _PhraseData implements PhraseData {
-  const factory _PhraseData(
-      {required final int id, required final String text}) = _$_PhraseData;
+  const factory _PhraseData({final Object? id, required final String text}) =
+      _$_PhraseData;
 
   @override
-  int get id;
+  Object? get id;
   @override
   String get text;
   @override

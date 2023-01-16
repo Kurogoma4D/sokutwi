@@ -59,46 +59,16 @@ class _CardPainter extends CustomPainter {
     final p = Paint()
       ..color = Colors.amber.shade50
       ..style = PaintingStyle.fill;
-    final stroke = Paint()
-      ..color = Colors.black87
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
 
     final path = Path()
-      ..moveTo(4.0, 0.0)
-      ..lineTo(size.width - 4, 0.0)
-      ..relativeArcToPoint(
-        const Offset(4, 4),
-        radius: const Radius.circular(4),
-      )
-      ..lineTo(size.width, size.height - cutRadius * 0.8)
-      ..relativeLineTo(-cutRadius * 1.6, cutRadius * 0.8)
-      ..lineTo(4.0, size.height)
-      ..relativeArcToPoint(
-        const Offset(-4, -4),
-        radius: const Radius.circular(4),
-      )
-      ..close();
-    final strokePath = Path()
-      ..moveTo(4.0, 0.0)
-      ..lineTo(size.width - 4, 0.0)
-      ..relativeArcToPoint(
-        const Offset(4, 4),
-        radius: const Radius.circular(4),
-      )
-      ..lineTo(size.width, size.height - cutRadius)
-      ..relativeQuadraticBezierTo(0, cutRadius / 2, -cutRadius * 0.6, 0)
-      ..quadraticBezierTo(size.width - cutRadius, size.height,
-          size.width - cutRadius * 2, size.height)
-      ..lineTo(4.0, size.height)
-      ..relativeArcToPoint(
-        const Offset(-4, -4),
-        radius: const Radius.circular(4),
-      )
+      ..lineTo(size.width, 0.0)
+      ..lineTo(size.width + 4.0, size.height)
+      ..lineTo(4.0, size.height - 2.0)
+      ..relativeLineTo(-2.6, -size.height / 3)
       ..close();
 
+    canvas.drawShadow(path, Colors.amber.shade50.withOpacity(0.8), 16, true);
     canvas.drawPath(path, p);
-    canvas.drawPath(strokePath, stroke);
   }
 
   @override

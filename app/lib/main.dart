@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sokutwi/app.dart';
 import 'package:sokutwi/datasources/local/box.dart';
@@ -11,6 +12,7 @@ import 'package:sokutwi/usecases/twitter_sign_in.dart';
 void main() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: binding);
+  MobileAds.instance.initialize();
   await Hive.initFlutter();
   Hive.registerAdapter(PhraseAdapter());
 

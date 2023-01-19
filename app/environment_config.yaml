@@ -9,3 +9,9 @@ environment_config:
     twitterClientSecret:
       type: String
       env_var: TWITTER_CLIENT_SECRET
+    admobBannerId:
+      type: String
+      env_var: ADMOB_BANNER_ID
+    admobTestBannerId:
+      type: String
+      env_var: ADMOB_TEST_BANNER_ID

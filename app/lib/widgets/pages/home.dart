@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:sokutwi/constants/environment_config.dart';
 import 'package:sokutwi/usecases/fixed_phrases.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
@@ -15,6 +17,8 @@ import 'package:sokutwi/widgets/components/tweet_card.dart';
 // https://github.com/cb-cloud/flutter_in_app_notification/blob/main/lib/src/in_app_notification.dart
 
 final _isShowingSticky = StateProvider.autoDispose((ref) => true);
+
+const _isProd = String.fromEnvironment('flavor') == 'prod';
 
 void _actionAfterTweet(
   TweetResult result,
@@ -53,18 +57,44 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
+  late final AdManagerBannerAd _banner;
+
   @override
   void initState() {
+    _banner = AdManagerBannerAd(
+      adUnitId: _isProd ? Env.admobTestBannerId : Env.admobBannerId,
+      sizes: [AdSize.banner],
+      listener: AdManagerBannerAdListener(),
+      request: const AdManagerAdRequest(),
+    )..load();
     FlutterNativeSplash.remove();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return const AnnotatedRegion<SystemUiOverlayStyle>(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
-      child: _Contents(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Column(
+          children: [
+            const Expanded(child: _Contents()),
+            SizedBox(
+              width: _banner.sizes.first.width.toDouble(),
+              height: _banner.sizes.first.height.toDouble(),
+              child: AdWidget(ad: _banner),
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    _banner.dispose();
+    super.dispose();
   }
 }
 
@@ -75,40 +105,37 @@ class _Contents extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isShowing = ref.watch(_isShowingSticky);
     final isSignedIn = ref.watch(isAlreadySignedIn);
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: LayoutBuilder(
-        builder: (context, constraints) => Stack(
-          children: [
-            const Positioned(
-              top: 0,
-              right: 0,
-              child: SafeArea(child: _Menu()),
+    return LayoutBuilder(
+      builder: (context, constraints) => Stack(
+        children: [
+          const Positioned(
+            top: 0,
+            right: 0,
+            child: SafeArea(child: _Menu()),
+          ),
+          Positioned(
+            bottom: 64,
+            left: 0,
+            right: 0,
+            child: isSignedIn ? const FixedPhrase() : const SignInBanner(),
+          ),
+          if (isShowing)
+            _Sticky(
+              displayHeight: constraints.maxHeight,
+              onDone: () async {
+                ref.watch(_isShowingSticky.notifier).state = false;
+                final result = await ref.read(postTweet)();
+                // ignore: use_build_context_synchronously
+                if (!context.mounted) return;
+                _actionAfterTweet(result, context, ref);
+                ref.watch(_isShowingSticky.notifier).state = true;
+              },
+            )
+          else
+            const Positioned.fill(
+              child: CircularProgressIndicator.adaptive(),
             ),
-            Positioned(
-              bottom: 64,
-              left: 0,
-              right: 0,
-              child: isSignedIn ? const FixedPhrase() : const SignInBanner(),
-            ),
-            if (isShowing)
-              _Sticky(
-                displayHeight: constraints.maxHeight,
-                onDone: () async {
-                  ref.watch(_isShowingSticky.notifier).state = false;
-                  final result = await ref.read(postTweet)();
-                  // ignore: use_build_context_synchronously
-                  if (!context.mounted) return;
-                  _actionAfterTweet(result, context, ref);
-                  ref.watch(_isShowingSticky.notifier).state = true;
-                },
-              )
-            else
-              const Positioned.fill(
-                child: CircularProgressIndicator.adaptive(),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

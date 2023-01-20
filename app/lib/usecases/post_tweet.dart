@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
+import 'package:sokutwi/usecases/tutorial_controls.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -38,6 +39,7 @@ final postTweet = Provider.autoDispose((ref) {
   final text = ref.watch(inputTweetText);
 
   return () async {
+    await ref.read(markDontShowTutorial)();
     const base = 'https://twitter.com/intent/tweet';
     final url = '$base?text=$text';
     final encoded = Uri.encodeFull(url);

@@ -1,7 +1,9 @@
 import 'package:auto_size_text_field/auto_size_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sokutwi/usecases/tutorial_controls.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
+import 'package:sokutwi/widgets/build_context_ex.dart';
 
 class TweetCard extends ConsumerStatefulWidget {
   final FocusNode focus;
@@ -17,6 +19,8 @@ class _TweetCardState extends ConsumerState<TweetCard> {
 
   @override
   Widget build(BuildContext context) {
+    final shouldShow = ref.watch(shouldShowInputTutorial);
+
     ref.listen(inputTweetText, (_, value) {
       if (value == _controller.text) return;
       _controller.text = value;
@@ -26,19 +30,24 @@ class _TweetCardState extends ConsumerState<TweetCard> {
       painter: _CardPainter(),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Center(
-          child: AutoSizeTextField(
-            controller: _controller,
-            focusNode: widget.focus,
-            onChanged: (value) => ref.read(updateTweetText)(value),
-            textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .textTheme
-                .headlineLarge
-                ?.copyWith(color: Colors.black54),
-            minFontSize: 12,
-            decoration: const InputDecoration(border: InputBorder.none),
-          ),
+        child: Stack(
+          children: [
+            if (shouldShow) const _InputTutorial(),
+            Center(
+              child: AutoSizeTextField(
+                controller: _controller,
+                focusNode: widget.focus,
+                onChanged: (value) => ref.read(updateTweetText)(value),
+                textAlign: TextAlign.center,
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineLarge
+                    ?.copyWith(color: Colors.black54),
+                minFontSize: 12,
+                decoration: const InputDecoration(border: InputBorder.none),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -96,4 +105,45 @@ class _CardPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _InputTutorial extends StatefulWidget {
+  const _InputTutorial();
+
+  @override
+  State<_InputTutorial> createState() => __InputTutorialState();
+}
+
+class __InputTutorialState extends State<_InputTutorial>
+    with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat(reverse: true);
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) => Opacity(
+        opacity: _controller.value,
+        child: child,
+      ),
+      child: Center(
+        child: Text(
+          context.string.inputText,
+          style: Theme.of(context)
+              .textTheme
+              .headlineLarge
+              ?.copyWith(color: Colors.black45),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 }

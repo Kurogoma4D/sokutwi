@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:sokutwi/constants/constants.dart';
 import 'package:sokutwi/constants/environment_config.dart';
 import 'package:sokutwi/usecases/fixed_phrases.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
@@ -61,12 +62,15 @@ class _HomeState extends ConsumerState<Home> {
 
   @override
   void initState() {
-    _banner = AdManagerBannerAd(
-      adUnitId: _isProd ? Env.admobTestBannerId : Env.admobBannerId,
-      sizes: [AdSize.banner],
-      listener: AdManagerBannerAdListener(),
-      request: const AdManagerAdRequest(),
-    )..load();
+    if (showAd) {
+      _banner = AdManagerBannerAd(
+        adUnitId: _isProd ? Env.admobTestBannerId : Env.admobBannerId,
+        sizes: [AdSize.banner],
+        listener: AdManagerBannerAdListener(),
+        request: const AdManagerAdRequest(),
+      )..load();
+    }
+
     FlutterNativeSplash.remove();
     super.initState();
   }
@@ -77,15 +81,18 @@ class _HomeState extends ConsumerState<Home> {
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Column(
-          children: [
-            const Expanded(child: _Contents()),
-            SizedBox(
-              width: _banner.sizes.first.width.toDouble(),
-              height: _banner.sizes.first.height.toDouble(),
-              child: AdWidget(ad: _banner),
-            ),
-          ],
+        body: SafeArea(
+          child: Column(
+            children: [
+              const Expanded(child: _Contents()),
+              if (showAd)
+                SizedBox(
+                  width: _banner.sizes.first.width.toDouble(),
+                  height: _banner.sizes.first.height.toDouble(),
+                  child: AdWidget(ad: _banner),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -111,10 +118,10 @@ class _Contents extends ConsumerWidget {
           const Positioned(
             top: 0,
             right: 0,
-            child: SafeArea(child: _Menu()),
+            child: _Menu(),
           ),
           Positioned(
-            bottom: 64,
+            bottom: 16,
             left: 0,
             right: 0,
             child: isSignedIn ? const FixedPhrase() : const SignInBanner(),
@@ -133,7 +140,9 @@ class _Contents extends ConsumerWidget {
             )
           else
             const Positioned.fill(
-              child: CircularProgressIndicator.adaptive(),
+              child: Center(
+                child: CircularProgressIndicator.adaptive(),
+              ),
             ),
         ],
       ),

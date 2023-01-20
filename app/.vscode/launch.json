@@ -41,6 +41,22 @@
       "flutterMode": "release",
       "args": ["--dart-define", "flavor=prod"],
       "preLaunchTask": "Export env"
+    },
+    {
+      "name": "debug-no-ad",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release",
+      "args": ["--dart-define", "flavor=dev", "--dart-define", "ad=false"],
+      "preLaunchTask": "Export env"
+    },
+    {
+      "name": "release-no-ad",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release",
+      "args": ["--dart-define", "flavor=prod", "--dart-define", "ad=false"],
+      "preLaunchTask": "Export env"
     }
   ]
 }

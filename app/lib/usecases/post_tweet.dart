@@ -10,6 +10,8 @@ part 'post_tweet.freezed.dart';
 
 enum TweetFailKind { clientNotReady, rateLimitExceeded, other }
 
+// final _hashTagPattern = RegExp(r'#[^\s　]+');
+
 extension TweetFailKindPatternMatch on TweetFailKind {
   T when<T>({
     required T Function() clientNotReady,
@@ -41,10 +43,12 @@ final postTweet = Provider.autoDispose((ref) {
   return () async {
     await ref.read(markDontShowTutorial)();
     const base = 'https://twitter.com/intent/tweet';
-    final url = '$base?text=$text';
-    final encoded = Uri.encodeFull(url);
-    if (await canLaunchUrlString(encoded)) {
-      await launchUrlString(encoded);
+    final encodedText = Uri.encodeQueryComponent(text);
+
+    final url = '$base?text=$encodedText';
+
+    if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
       return const TweetResult.success();
     }
 

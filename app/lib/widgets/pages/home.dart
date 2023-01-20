@@ -24,6 +24,7 @@ void _actionAfterTweet(
   BuildContext context,
   WidgetRef ref,
 ) {
+  ref.read(updateTweetText)('');
   final message = result.when(
     success: () => context.string.doneTweet,
     fail: (kind) => kind.when(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 part 'post_tweet.freezed.dart';
 
@@ -37,6 +38,14 @@ final postTweet = Provider.autoDispose((ref) {
   final text = ref.watch(inputTweetText);
 
   return () async {
-    return const TweetResult.success();
+    const base = 'https://twitter.com/intent/tweet';
+    final url = '$base?text=$text';
+    final encoded = Uri.encodeFull(url);
+    if (await canLaunchUrlString(encoded)) {
+      await launchUrlString(encoded);
+      return const TweetResult.success();
+    }
+
+    return const TweetResult.fail(kind: TweetFailKind.other);
   };
 });

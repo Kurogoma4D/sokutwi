@@ -19,19 +19,19 @@ mixin _$TweetResult<R> {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(TweetFailKind kind, TwitterException? error) fail,
+    required TResult Function(TweetFailKind kind) fail,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(TweetFailKind kind, TwitterException? error)? fail,
+    TResult? Function(TweetFailKind kind)? fail,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(TweetFailKind kind, TwitterException? error)? fail,
+    TResult Function(TweetFailKind kind)? fail,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -121,7 +121,7 @@ class _$TweetSuccess<R>
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(TweetFailKind kind, TwitterException? error) fail,
+    required TResult Function(TweetFailKind kind) fail,
   }) {
     return success();
   }
@@ -130,7 +130,7 @@ class _$TweetSuccess<R>
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(TweetFailKind kind, TwitterException? error)? fail,
+    TResult? Function(TweetFailKind kind)? fail,
   }) {
     return success?.call();
   }
@@ -139,7 +139,7 @@ class _$TweetSuccess<R>
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(TweetFailKind kind, TwitterException? error)? fail,
+    TResult Function(TweetFailKind kind)? fail,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -190,7 +190,7 @@ abstract class _$$TweetFailCopyWith<R, $Res> {
           _$TweetFail<R> value, $Res Function(_$TweetFail<R>) then) =
       __$$TweetFailCopyWithImpl<R, $Res>;
   @useResult
-  $Res call({TweetFailKind kind, TwitterException? error});
+  $Res call({TweetFailKind kind});
 }
 
 /// @nodoc
@@ -205,17 +205,12 @@ class __$$TweetFailCopyWithImpl<R, $Res>
   @override
   $Res call({
     Object? kind = null,
-    Object? error = freezed,
   }) {
     return _then(_$TweetFail<R>(
       kind: null == kind
           ? _value.kind
           : kind // ignore: cast_nullable_to_non_nullable
               as TweetFailKind,
-      error: freezed == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as TwitterException?,
     ));
   }
 }
@@ -223,16 +218,14 @@ class __$$TweetFailCopyWithImpl<R, $Res>
 /// @nodoc
 
 class _$TweetFail<R> with DiagnosticableTreeMixin implements TweetFail<R> {
-  const _$TweetFail({required this.kind, this.error});
+  const _$TweetFail({required this.kind});
 
   @override
   final TweetFailKind kind;
-  @override
-  final TwitterException? error;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'TweetResult<$R>.fail(kind: $kind, error: $error)';
+    return 'TweetResult<$R>.fail(kind: $kind)';
   }
 
   @override
@@ -240,8 +233,7 @@ class _$TweetFail<R> with DiagnosticableTreeMixin implements TweetFail<R> {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('type', 'TweetResult<$R>.fail'))
-      ..add(DiagnosticsProperty('kind', kind))
-      ..add(DiagnosticsProperty('error', error));
+      ..add(DiagnosticsProperty('kind', kind));
   }
 
   @override
@@ -249,12 +241,11 @@ class _$TweetFail<R> with DiagnosticableTreeMixin implements TweetFail<R> {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TweetFail<R> &&
-            (identical(other.kind, kind) || other.kind == kind) &&
-            (identical(other.error, error) || other.error == error));
+            (identical(other.kind, kind) || other.kind == kind));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, kind, error);
+  int get hashCode => Object.hash(runtimeType, kind);
 
   @JsonKey(ignore: true)
   @override
@@ -266,29 +257,29 @@ class _$TweetFail<R> with DiagnosticableTreeMixin implements TweetFail<R> {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() success,
-    required TResult Function(TweetFailKind kind, TwitterException? error) fail,
+    required TResult Function(TweetFailKind kind) fail,
   }) {
-    return fail(kind, error);
+    return fail(kind);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? success,
-    TResult? Function(TweetFailKind kind, TwitterException? error)? fail,
+    TResult? Function(TweetFailKind kind)? fail,
   }) {
-    return fail?.call(kind, error);
+    return fail?.call(kind);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? success,
-    TResult Function(TweetFailKind kind, TwitterException? error)? fail,
+    TResult Function(TweetFailKind kind)? fail,
     required TResult orElse(),
   }) {
     if (fail != null) {
-      return fail(kind, error);
+      return fail(kind);
     }
     return orElse();
   }
@@ -326,12 +317,9 @@ class _$TweetFail<R> with DiagnosticableTreeMixin implements TweetFail<R> {
 }
 
 abstract class TweetFail<R> implements TweetResult<R> {
-  const factory TweetFail(
-      {required final TweetFailKind kind,
-      final TwitterException? error}) = _$TweetFail<R>;
+  const factory TweetFail({required final TweetFailKind kind}) = _$TweetFail<R>;
 
   TweetFailKind get kind;
-  TwitterException? get error;
   @JsonKey(ignore: true)
   _$$TweetFailCopyWith<R, _$TweetFail<R>> get copyWith =>
       throw _privateConstructorUsedError;

@@ -8,7 +8,6 @@ import 'package:sokutwi/constants/constants.dart';
 import 'package:sokutwi/datasources/local/box.dart';
 import 'package:sokutwi/datasources/local/entity/phrase.dart';
 import 'package:sokutwi/mock_overrides.dart';
-import 'package:sokutwi/usecases/twitter_sign_in.dart';
 
 void main() async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
@@ -31,8 +30,6 @@ void main() async {
       if (isMock) ...mockOverrides,
     ],
   );
-
-  await rootContainer.read(tryObtainAuthToken)();
 
   runApp(ProviderScope(
     parent: rootContainer,

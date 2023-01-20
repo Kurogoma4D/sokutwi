@@ -8,10 +8,8 @@ import 'package:sokutwi/constants/environment_config.dart';
 import 'package:sokutwi/usecases/fixed_phrases.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
-import 'package:sokutwi/usecases/twitter_sign_in.dart';
 import 'package:sokutwi/widgets/build_context_ex.dart';
 import 'package:sokutwi/widgets/components/fixed_phrases.dart';
-import 'package:sokutwi/widgets/components/sign_in_banner.dart';
 import 'package:sokutwi/widgets/components/tweet_card.dart';
 
 // Drag element codes Inspired from:
@@ -28,25 +26,14 @@ void _actionAfterTweet(
 ) {
   final message = result.when(
     success: () => context.string.doneTweet,
-    fail: (kind, error) => kind.when(
+    fail: (kind) => kind.when(
       clientNotReady: () => context.string.clientNotReady,
       rateLimitExceeded: () => context.string.tryLater,
-      other: () => error?.message ?? context.string.somethingWentWrong,
+      other: () => context.string.somethingWentWrong,
     ),
-  );
-  final needSignIn = result.maybeWhen(
-    fail: (kind, _) => kind == TweetFailKind.clientNotReady,
-    orElse: () => false,
-  );
-  final signInAction = SnackBarAction(
-    label: context.string.signIn,
-    onPressed: () => ref.read(twitterSignInUsecase)(),
   );
   ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      action: needSignIn ? signInAction : null,
-    ),
+    SnackBar(content: Text(message)),
   );
 }
 
@@ -111,7 +98,6 @@ class _Contents extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isShowing = ref.watch(_isShowingSticky);
-    final isSignedIn = ref.watch(isAlreadySignedIn);
     return LayoutBuilder(
       builder: (context, constraints) => Stack(
         children: [
@@ -120,11 +106,11 @@ class _Contents extends ConsumerWidget {
             right: 0,
             child: _Menu(),
           ),
-          Positioned(
+          const Positioned(
             bottom: 16,
             left: 0,
             right: 0,
-            child: isSignedIn ? const FixedPhrase() : const SignInBanner(),
+            child: FixedPhrase(),
           ),
           if (isShowing)
             _Sticky(
@@ -163,10 +149,6 @@ class _Menu extends ConsumerWidget {
       leadingIcon: const SizedBox.shrink(),
       trailingIcon: const SizedBox.shrink(),
       menuChildren: [
-        MenuItemButton(
-          onPressed: () => ref.read(twitterSignOutUsecase)(),
-          child: Text(context.string.signOut),
-        ),
         MenuItemButton(
           onPressed: () async {
             final controller = ScaffoldMessenger.of(context).showSnackBar(
@@ -268,7 +250,7 @@ class _StickyState extends ConsumerState<_Sticky>
       (neutralPosition + _animationController.dragDistance);
 
   bool get canPostTweet {
-    return ref.read(inputTweetText).isNotEmpty && ref.read(isAlreadySignedIn);
+    return ref.read(inputTweetText).isNotEmpty;
   }
 
   @override

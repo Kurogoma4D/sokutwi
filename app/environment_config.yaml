@@ -3,12 +3,6 @@ environment_config:
   class: Env
 
   fields:
-    twitterClientId: 
-      type: String
-      env_var: TWITTER_CLIENT_ID
-    twitterClientSecret:
-      type: String
-      env_var: TWITTER_CLIENT_SECRET
     admobBannerId:
       type: String
       env_var: ADMOB_BANNER_ID

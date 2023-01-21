@@ -1,23 +1,26 @@
+import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sokutwi/constants/constants.dart';
-import 'package:sokutwi/constants/environment_config.dart';
 import 'package:sokutwi/usecases/fixed_phrases.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
 import 'package:sokutwi/widgets/build_context_ex.dart';
+import 'package:sokutwi/widgets/components/ad_banner.dart'
+    if (dart.library.io) 'package:sokutwi/widgets/components/ad_banner_mobile.dart';
 import 'package:sokutwi/widgets/components/fixed_phrases.dart';
 import 'package:sokutwi/widgets/components/tweet_card.dart';
 
 // Drag element codes Inspired from:
 // https://github.com/cb-cloud/flutter_in_app_notification/blob/main/lib/src/in_app_notification.dart
 
-final _isShowingSticky = StateProvider.autoDispose((ref) => true);
+const _cardSizeLimit = 600.0;
 
-const _isProd = String.fromEnvironment('flavor') == 'prod';
+final _isShowingSticky = StateProvider.autoDispose((ref) => true);
 
 void _actionAfterTweet(
   TweetResult result,
@@ -46,19 +49,8 @@ class Home extends ConsumerStatefulWidget {
 }
 
 class _HomeState extends ConsumerState<Home> {
-  late final AdManagerBannerAd _banner;
-
   @override
   void initState() {
-    if (showAd) {
-      _banner = AdManagerBannerAd(
-        adUnitId: _isProd ? Env.admobTestBannerId : Env.admobBannerId,
-        sizes: [AdSize.banner],
-        listener: AdManagerBannerAdListener(),
-        request: const AdManagerAdRequest(),
-      )..load();
-    }
-
     FlutterNativeSplash.remove();
     super.initState();
   }
@@ -71,25 +63,14 @@ class _HomeState extends ConsumerState<Home> {
         resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Column(
-            children: [
-              const Expanded(child: _Contents()),
-              if (showAd)
-                SizedBox(
-                  width: _banner.sizes.first.width.toDouble(),
-                  height: _banner.sizes.first.height.toDouble(),
-                  child: AdWidget(ad: _banner),
-                ),
+            children: const [
+              Expanded(child: _Contents()),
+              if (showAd && !kIsWeb) AdBanner(),
             ],
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _banner.dispose();
-    super.dispose();
   }
 }
 
@@ -256,23 +237,23 @@ class _StickyState extends ConsumerState<_Sticky>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final width = min(screenWidth - 32, _cardSizeLimit).toDouble();
+    final offset =
+        width < _cardSizeLimit ? 16 : (screenWidth - _cardSizeLimit) / 2;
+
     return Positioned(
       bottom: _currentPosition,
-      left: 0,
-      right: 0,
+      left: offset.toDouble(),
+      width: width,
+      height: widget.height,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onVerticalDragStart: (_) => textFocus.unfocus(),
         onVerticalDragUpdate: _onVerticalDragUpdate,
         onVerticalDragEnd: (details) => _onVerticalDragEnd(details),
         onTap: () => textFocus.requestFocus(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SizedBox(
-            height: widget.height,
-            child: TweetCard(focus: textFocus),
-          ),
-        ),
+        child: TweetCard(focus: textFocus),
       ),
     );
   }

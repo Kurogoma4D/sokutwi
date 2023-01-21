@@ -66,6 +66,7 @@ class _HomeState extends ConsumerState<Home> {
             children: const [
               Expanded(child: _Contents()),
               if (showAd && !kIsWeb) AdBanner(),
+              if (kIsWeb) SizedBox(height: 100),
             ],
           ),
         ),

@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sokutwi/constants/constants.dart';
 import 'package:sokutwi/usecases/fixed_phrases.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
-import 'package:sokutwi/usecases/show_privacy_policy.dart';
+import 'package:sokutwi/usecases/web_page_open.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
 import 'package:sokutwi/utils/cookie_preference.dart'
     if (dart.library.html) 'package:sokutwi/utils/cookie_preference_web.dart';
@@ -69,7 +69,6 @@ class _HomeState extends ConsumerState<Home> {
             children: const [
               Expanded(child: _Contents()),
               if (showAd && !kIsWeb) AdBanner(),
-              if (kIsWeb) SizedBox(height: 100),
             ],
           ),
         ),
@@ -158,6 +157,10 @@ class _Menu extends ConsumerWidget {
             controller.close();
           },
           child: Text(context.string.exportFixedPhrases),
+        ),
+        MenuItemButton(
+          onPressed: () => ref.read(buyMeACoffeeOpener)(),
+          child: Text(context.string.donate),
         ),
         MenuItemButton(
           onPressed: () => showLicensePage(context: context),

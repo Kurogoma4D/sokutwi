@@ -1,6 +1,7 @@
 {
   "appNeedsSignIn": "これ使うにはログインいるのでやってくれな",
   "clientNotReady": "なんかダメだったからログインし直してほしいな",
+  "cookiePreference": "Cookieの設定",
   "delete": "消す",
   "doneTweet": "つぶやいた！",
   "exportFixedPhrases": "定型文を外部に書き出す",
@@ -11,6 +12,7 @@
   "inputText": "ここに何か入力...",
   "license": "ライセンス",
   "pleaseSignIn": "ログインしてくれよな",
+  "privacyPolicy": "プライバシーポリシー",
   "signIn": "ログイン",
   "signOut": "ログアウト",
   "somethingWentWrong": "なんかうまくいかなかったっぽい",

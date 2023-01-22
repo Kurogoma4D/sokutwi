@@ -156,6 +156,10 @@ class _Menu extends ConsumerWidget {
           },
           child: Text(context.string.exportFixedPhrases),
         ),
+        MenuItemButton(
+          onPressed: () => showLicensePage(context: context),
+          child: Text(context.string.license),
+        ),
       ],
       child: const Icon(
         Icons.menu,

@@ -106,9 +106,18 @@ final importPhrases = Provider.autoDispose(
       withData: true,
     );
 
-    final path = result?.paths.first;
-    if (path == null) return;
-    final file = File(path);
+    final file = () {
+      if (kIsWeb) {
+        final bytes = result?.files.first;
+        if (bytes == null) return null;
+        return XFile.fromData(bytes.bytes ?? Uint8List(0));
+      } else {
+        final path = result?.paths.first;
+        if (path == null) return null;
+        return XFile(path);
+      }
+    }();
+    if (file == null) return;
 
     final csv = await file.readAsString();
     final phraseStrings = const CsvToListConverter().convert(csv);

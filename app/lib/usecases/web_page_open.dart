@@ -7,8 +7,8 @@ final privacyPolicyOpener = Provider.autoDispose(
   },
 );
 
-final buyMeACoffeeOpener = Provider.autoDispose(
+final sponsorOpener = Provider.autoDispose(
   (ref) => () {
-    launchUrlString('https://www.buymeacoffee.com/kurogoma4d');
+    launchUrlString('https://github.com/sponsors/Kurogoma4D');
   },
 );

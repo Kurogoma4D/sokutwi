@@ -159,7 +159,7 @@ class _Menu extends ConsumerWidget {
           child: Text(context.string.exportFixedPhrases),
         ),
         MenuItemButton(
-          onPressed: () => ref.read(buyMeACoffeeOpener)(),
+          onPressed: () => ref.read(sponsorOpener)(),
           child: Text(context.string.donate),
         ),
         MenuItemButton(

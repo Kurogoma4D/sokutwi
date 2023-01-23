@@ -10,8 +10,6 @@ import 'package:sokutwi/usecases/fixed_phrases.dart';
 import 'package:sokutwi/usecases/post_tweet.dart';
 import 'package:sokutwi/usecases/web_page_open.dart';
 import 'package:sokutwi/usecases/tweet_text.dart';
-import 'package:sokutwi/utils/cookie_preference.dart'
-    if (dart.library.html) 'package:sokutwi/utils/cookie_preference_web.dart';
 import 'package:sokutwi/widgets/build_context_ex.dart';
 import 'package:sokutwi/widgets/components/ad_banner.dart'
     if (dart.library.io) 'package:sokutwi/widgets/components/ad_banner_mobile.dart';
@@ -166,11 +164,6 @@ class _Menu extends ConsumerWidget {
           onPressed: () => showLicensePage(context: context),
           child: Text(context.string.license),
         ),
-        if (kIsWeb)
-          MenuItemButton(
-            onPressed: () => showCookiePreference(),
-            child: Text(context.string.cookiePreference),
-          ),
         MenuItemButton(
           onPressed: () => ref.read(privacyPolicyOpener)(),
           child: Text(context.string.privacyPolicy),

@@ -1,0 +1,21 @@
+on:
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.7.0-14.0.pre.2'
+          channel: 'master'
+
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Analyze
+        run: flutter analyze

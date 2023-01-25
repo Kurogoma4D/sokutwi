@@ -27,6 +27,9 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      - name: Generate l10n
+        run: flutter gen-l10n
+
       - name: Configure Keystore
         env:
           ANDROID_KEY_FILE_BASE64: ${{ secrets.ANDROID_KEY_FILE_BASE64 }}

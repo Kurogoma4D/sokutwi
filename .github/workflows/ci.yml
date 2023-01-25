@@ -1,6 +1,7 @@
 name: CI/PullRequest
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
     - main
@@ -17,6 +18,15 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Generate l10n
+        run: flutter gen-l10n
       
+      - name: Generate env
+        env:
+          ADMOB_BANNER_ID: ${{ secrets.ADMOB_BANNER_ID }}
+          ADMOB_TEST_BANNER_ID: ${{ secrets.ADMOB_TEST_BANNER_ID }}
+        run: ./export_env.sh
+
       - name: Analyze
         run: flutter analyze

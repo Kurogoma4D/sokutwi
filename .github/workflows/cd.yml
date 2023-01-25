@@ -30,6 +30,12 @@ jobs:
       - name: Generate l10n
         run: flutter gen-l10n
 
+      - name: Generate env
+        env:
+          ADMOB_BANNER_ID: ${{ secrets.ADMOB_BANNER_ID }}
+          ADMOB_TEST_BANNER_ID: ${{ secrets.ADMOB_TEST_BANNER_ID }}
+        run: ./export_env.sh
+
       - name: Configure Keystore
         env:
           ANDROID_KEY_FILE_BASE64: ${{ secrets.ANDROID_KEY_FILE_BASE64 }}

@@ -48,7 +48,10 @@ final postTweet = Provider.autoDispose((ref) {
     final url = '$base?text=$encodedText';
 
     if (await canLaunchUrlString(url)) {
-      await launchUrlString(url);
+      await launchUrlString(
+        url,
+        mode: LaunchMode.externalNonBrowserApplication,
+      );
       return const TweetResult.success();
     }
 

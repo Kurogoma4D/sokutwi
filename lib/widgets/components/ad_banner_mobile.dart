@@ -18,7 +18,7 @@ class _AdBannerState extends State<AdBanner> {
   void initState() {
     super.initState();
     _banner = AdManagerBannerAd(
-      adUnitId: _isProd ? Env.admobTestBannerId : Env.admobBannerId,
+      adUnitId: _isProd ? Env.admobBannerId : Env.admobTestBannerId,
       sizes: [AdSize.banner],
       listener: AdManagerBannerAdListener(),
       request: const AdManagerAdRequest(),

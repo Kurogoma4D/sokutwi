@@ -46,7 +46,7 @@
       "name": "debug-no-ad",
       "request": "launch",
       "type": "dart",
-      "flutterMode": "release",
+      "flutterMode": "debug",
       "args": ["--dart-define", "flavor=dev", "--dart-define", "ad=false"],
       "preLaunchTask": "Export env"
     },

@@ -53,6 +53,11 @@ jobs:
         run: |
           flutter build appbundle --dart-define flavor=prod --build-number ${{ github.run_number }} 
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 'app bundle'
+          path: build/app/outputs/bundle/release/app-release.aab
+
       - name: Upload Play Store
         uses: r0adkll/upload-google-play@v1
         with:

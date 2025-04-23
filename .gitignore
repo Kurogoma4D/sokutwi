@@ -46,4 +46,6 @@ app.*.map.json
 # Extra
 *.env
 environment_config.dart
-.fvm/flutter_sdk
+
+# FVM Version Cache
+.fvm/

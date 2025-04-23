@@ -1,5 +1,5 @@
 {
   "i18nArbEditor.defaultLanguageFileName": "app_ja.arb",
-  "dart.flutterSdkPath": "${workspaceFolder}/.fvm/flutter_sdk/bin/flutter",
+  "dart.flutterSdkPath": ".fvm/versions/3.7.9",
   "dart.sdkPath": "${workspaceFolder}/.fvm/flutter_sdk/bin/dart"
 }
